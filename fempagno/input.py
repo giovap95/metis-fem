@@ -4,7 +4,7 @@ Created on Mon Mar 23 15:34:55 2020
 
 @author: giova
 """
-
+import meshio
 import sys
 # specify where to look for modules
 sys.path.append("modules")
