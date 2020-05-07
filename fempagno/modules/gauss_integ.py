@@ -110,9 +110,6 @@ def quad(mesh,E,ni,t,weights,roots,cdsreal,parameters):
             
             # Stiffness matrix
             k = k + B.T@D@B*det*w*t
-            print('csi,eta old \n',csi,eta)
-            print('dNxy old \n',dNxy)
-            print('jac old \n',jac)
     return k
 
 

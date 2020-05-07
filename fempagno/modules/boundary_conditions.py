@@ -11,16 +11,29 @@ class BoundaryConditions:
     def __init__(self):
         self.load = None
         self.disp = None
-        self.zerodisp_dof = None
+        self.dirichlet_nodes = None
+        self.neumann_nodes = None
         
+    def find_dofs(self,mesh,nodes):
+        dn = mesh.dofspernode
+        dofs = np.array([nodes * dn,
+                          nodes * dn + 1])
+        dofs = np.concatenate(dofs.T)
+        return dofs
+    
     
     def apply_bcs(self,F,K,mesh):
-        F[self.load[:,0]] += self.load[:,1] # prescribed nodal external forces
+        
+        # Find dofs where Neumann conditions are enforced
+        neumann_dofs = self.find_dofs(mesh,self.neumann_nodes)
+        # Apply forces on neumann dofs
+        F[neumann_dofs] += self.load # prescribed nodal external forces
         
         
-        F[self.zerodisp_dof] = 0 # zeroing forces on nodes with zero displacement
-        
+        # Find dofs where Dirichlet conditions are enforced
+        dirichlet_dofs = self.find_dofs(mesh,self.dirichlet_nodes)
+        F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement
         # zeroing out zero displacement columns and rows
-        K[:,self.zerodisp_dof] = 0
-        K[self.zerodisp_dof,:] = 0
-        K[self.zerodisp_dof,self.zerodisp_dof] = 1
+        K[:,dirichlet_dofs] = 0
+        K[dirichlet_dofs,:] = 0
+        K[dirichlet_dofs,dirichlet_dofs] = 1
