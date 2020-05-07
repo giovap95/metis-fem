@@ -52,8 +52,8 @@ def linear(mesh,bcs,material_lib,parameters):
     Ucoord = U.reshape((mesh.nodes,2))
     m = mesh.cds_table+Ucoord
     ax2 = plt.plot(m[:,0],m[:,1],'-o')
-    plt.xlim(0,250)
-    plt.ylim(-1.5,150)
+    plt.xlim(0,2)
+    plt.ylim(-1.5,2)
     
     plt.show()
     return U,K

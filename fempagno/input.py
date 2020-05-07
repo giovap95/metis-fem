@@ -8,6 +8,7 @@ import meshio
 import sys
 # specify where to look for modules
 sys.path.append("modules")
+sys.path.append("PRE")
 
 
 # import modules and specific functions
@@ -16,29 +17,28 @@ from motoremesh import Mesh
 from boundary_conditions import BoundaryConditions
 import solver
 
-
+# Read mesh file from gmsh
+gmsh = meshio.read("D:\\Documents\\GitHub\\metis-fem\\fempagno\\PRE\\prova.msh")
 # Instancing classes to objects
 mesh = Mesh()
 
-mesh.material = [5]
-mesh.el_def = [1] # could be deprecated?
-mesh.cds_table = np.array([[0,0],
-                           [100,0],
-                           [100,100]]) # coordinates of each node anti-clockwise
+mesh.material = gmsh.get_cell_data('gmsh:physical','triangle')
+mesh.el_def = np.ones((len(mesh.material),1)) # could be deprecated?
+mesh.cds_table = gmsh.points[:,0:2] # coordinates of each node anti-clockwise
 
-mesh.conn_table = np.array([[0,1,2]]) # nodes in each element (1 row: 1 element) anti-clockwise
+mesh.conn_table = gmsh.cells_dict['triangle'] # nodes in each element (1 row: 1 element) anti-clockwise
 
-mesh.elements = 1
-mesh.nodes = 3
+mesh.elements = len(gmsh.cells_dict['triangle'])
+mesh.nodes = len(gmsh.points)
 mesh.nodesperelem = 500 # deprecable
 mesh.dofspernode = 2
 mesh.totdofs=mesh.nodes*mesh.dofspernode
 
 
 bcs = BoundaryConditions()
-bcs.load = np.array([[5,1000]]) # dof x, forza y (in newton N)
-
-bcs.zerodisp_dof = np.array([0,1,2]) # dof with prescribed zero displacement
+bcs.dirichlet_nodes = gmsh.cell_sets_dict['Dirichlet']['line']
+bcs.neumann_nodes = gmsh.cell_sets_dict['Neumann']['line']
+bcs.load = 500
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -80,8 +80,8 @@ material_lib =           {1  :  {'element' :  'spring',
                                                         'domain':'quad',
                                                         'rule':'Gauss Legendre',
                                                         'points':4}},
-                         5  :  {'element'  :  'triangle',
-                                'elastic properties' : {"Young's modulus":70000000,
+                         316  :  {'element'  :  'triangle',
+                                'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},
                                 'stiffness matrix' :   {'evaluation':'numerical integration',
