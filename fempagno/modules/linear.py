@@ -9,6 +9,9 @@ from numpy.linalg import inv
 import motoreFEM
 import matplotlib.pyplot as plt
 import sys
+import time
+from tqdm import tqdm
+
 
 def linear(mesh,bcs,material_lib,parameters):
     #%% Allocating memory
@@ -21,8 +24,9 @@ def linear(mesh,bcs,material_lib,parameters):
 
 
     #%% Magic happens
-print('------ Stiffness matrix assembly -------')
-    for i in np.arange(mesh.elements):
+    print('------ Stiffness matrix assembly -------')
+
+    for i in tqdm(np.arange(mesh.elements)):
 
         mesh.el_type(i)
 
@@ -32,7 +36,7 @@ print('------ Stiffness matrix assembly -------')
 
         K = motoreFEM.assembly(k,dof,K)
 
-print('------ Applying boundary conditions ------')
+    print('------ Applying boundary conditions ------')
     #%% Applying boundary conditions
     bcs.apply_bcs(F,K,mesh)
 
@@ -45,7 +49,7 @@ print('------ Applying boundary conditions ------')
         print('\n','\n')
         sys.exit()
 
-print('------ Computing displacements ------')    
+    print('------ Computing displacements ------')
     U = inv(K)@F
 
     print('###########################################################')
