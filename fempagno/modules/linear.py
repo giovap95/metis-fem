@@ -24,6 +24,7 @@ def linear(mesh,bcs,material_lib,parameters):
 
 
     #%% Magic happens
+
     print('------ Stiffness matrix assembly -------')
 
     for i in tqdm(np.arange(mesh.elements)):
@@ -49,17 +50,12 @@ def linear(mesh,bcs,material_lib,parameters):
         print('\n','\n')
         sys.exit()
 
+
     print('------ Computing displacements ------')
+
     U = inv(K)@F
 
     print('###########################################################')
     print('U: ',U)
-    ax1 = plt.plot(mesh.cds_table[:,0],mesh.cds_table[:,1],'-o')
-    Ucoord = U.reshape((mesh.nodes,2))
-    m = mesh.cds_table+Ucoord
-    ax2 = plt.plot(m[:,0],m[:,1],'-o')
-    plt.xlim(0,2)
-    plt.ylim(-1.5,2)
-
-    plt.show()
+    
     return U,K
