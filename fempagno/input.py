@@ -21,14 +21,15 @@ import solver
 gmsh = meshio.read("D:\\Documents\\GitHub\\metis-fem\\fempagno\\PRE\\prova.msh")
 # Instancing classes to objects
 mesh = Mesh()
+element = 'triangle'
 
-mesh.material = gmsh.get_cell_data('gmsh:physical','triangle')
+mesh.material = gmsh.get_cell_data('gmsh:physical',element)
 mesh.el_def = np.ones((len(mesh.material),1)) # could be deprecated?
 mesh.cds_table = gmsh.points[:,0:2] # coordinates of each node anti-clockwise
 
-mesh.conn_table = gmsh.cells_dict['triangle'] # nodes in each element (1 row: 1 element) anti-clockwise
+mesh.conn_table = gmsh.cells_dict[element] # nodes in each element (1 row: 1 element) anti-clockwise
 
-mesh.elements = len(gmsh.cells_dict['triangle'])
+mesh.elements = len(gmsh.cells_dict[element])
 mesh.nodes = len(gmsh.points)
 mesh.nodesperelem = 500 # deprecable
 mesh.dofspernode = 2
@@ -36,9 +37,9 @@ mesh.totdofs=mesh.nodes*mesh.dofspernode
 
 
 bcs = BoundaryConditions()
-bcs.dirichlet_nodes = gmsh.cell_sets_dict['Dirichlet']['line']
-bcs.neumann_nodes = gmsh.cell_sets_dict['Neumann']['line']
-bcs.load = 500
+bcs.dirichlet_nodes = np.unique(gmsh.cells_dict['line'][gmsh.cell_sets_dict['Dirichlet']['line']]) # TODO: move this to a function
+bcs.neumann_nodes = np.unique(gmsh.cells_dict['line'][gmsh.cell_sets_dict['Neumann']['line']])
+bcs.load = 500 # TODO: move to a function and add possibility to set x or y load
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -72,7 +73,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                 'geometric properties': {'area': 1},
                                 'stiffness matrix' :    {'evaluation':'closed form'}},
 
-                         4  :  {'element' : 'quad',
+                         310  :  {'element' : 'quad',
                                 'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},
@@ -87,8 +88,13 @@ material_lib =           {1  :  {'element' :  'spring',
                                 'stiffness matrix' :   {'evaluation':'numerical integration',
                                                         'domain':'triangle',
                                                         'rule':'Gauss Legendre',
-                                                        'points':3}}, #TODO: change points' domain to 4 to avoid "for" loops (also for quads)
+                                                        'points':3}}, 
                          }
 
 # Solver
 U,K = solver.run(mesh,bcs,material_lib,parameters)
+
+print('dirichlet nodes',bcs.dirichlet_nodes)
+print('neumann nodes',bcs.neumann_nodes)
+gmsh.point_data = {'Displacement':U.reshape((int(len(U)/2),2))}
+meshio.write('prova2.vtk',gmsh,file_format='vtk')
