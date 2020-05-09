@@ -96,7 +96,5 @@ material_lib =           {1  :  {'element' :  'spring',
 # Solver
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
-print('dirichlet nodes',bcs.dirichlet_nodes)
-print('neumann nodes',bcs.neumann_nodes)
 gmsh.point_data = {'Displacement':U.reshape((int(len(U)/2),2))}
 meshio.write('prova2.vtk',gmsh,file_format='vtk')
