@@ -21,7 +21,7 @@ import solver
 gmsh = meshio.read("D:\\Documents\\GitHub\\metis-fem\\fempagno\\PRE\\composite.msh")
 # Instancing classes to objects
 mesh = Mesh()
-element = 'quad'
+element = 'triangle'
 
 mesh.material = gmsh.get_cell_data('gmsh:physical',element)
 mesh.el_def = np.ones((len(mesh.material),1)) # could be deprecated?
@@ -73,7 +73,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                 'geometric properties': {'area': 1},
                                 'stiffness matrix' :    {'evaluation':'closed form'}},
 
-                         8  :  {'element' : 'quad',
+                         81  :  {'element' : 'quad',
                                 'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},
@@ -81,7 +81,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                                         'domain':'quad',
                                                         'rule':'Gauss Legendre',
                                                         'points':4}},
-                         18  :  {'element'  :  'triangle',
+                         8  :  {'element'  :  'triangle',
                                 'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},
