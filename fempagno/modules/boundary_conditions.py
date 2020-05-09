@@ -7,29 +7,34 @@ Created on Tue Apr 28 11:33:51 2020
 import numpy as np
 
 class BoundaryConditions:
-    
+
     def __init__(self):
         self.load = None
         self.disp = None
         self.dirichlet_nodes = None
         self.neumann_nodes = None
-        
+
     def find_dofs(self,mesh,nodes):
         dn = mesh.dofspernode
         dofs = np.array([nodes * dn,
                           nodes * dn + 1])
         dofs = np.concatenate(dofs.T)
         return dofs
-    
-    
+
+    def find_boundary_nodes(self, gmsh, tag):
+        boundary_elements = gmsh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
+        boundary_nodes = gmsh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
+        boundary_nodes = np.unique(boundary_nodes) # only consider nodes once
+        return boundary_nodes
+
     def apply_bcs(self,F,K,mesh):
-        
+
         # Find dofs where Neumann conditions are enforced
         neumann_dofs = self.find_dofs(mesh,self.neumann_nodes)
         # Apply forces on neumann dofs
         F[neumann_dofs] += self.load # prescribed nodal external forces
-        
-        
+
+
         # Find dofs where Dirichlet conditions are enforced
         dirichlet_dofs = self.find_dofs(mesh,self.dirichlet_nodes)
         F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement

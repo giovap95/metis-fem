@@ -37,8 +37,10 @@ mesh.totdofs=mesh.nodes*mesh.dofspernode
 
 
 bcs = BoundaryConditions()
-bcs.dirichlet_nodes = np.unique(gmsh.cells_dict['line'][gmsh.cell_sets_dict['Dirichlet']['line']]) # TODO: move this to a function
-bcs.neumann_nodes = np.unique(gmsh.cells_dict['line'][gmsh.cell_sets_dict['Neumann']['line']])
+bcs.dirichlet_nodes = bcs.find_boundary_nodes(gmsh,'Dirichlet')
+bcs.neumann_nodes = bcs.find_boundary_nodes(gmsh,'Neumann')
+#bcs.dirichlet_nodes = np.unique(gmsh.cells_dict['line'][gmsh.cell_sets_dict['Dirichlet']['line']]) # TODO: move this to a function
+#bcs.neumann_nodes = np.unique(gmsh.cells_dict['line'][gmsh.cell_sets_dict['Neumann']['line']])
 bcs.load = 500 # TODO: move to a function and add possibility to set x or y load
 
 # Define parameters and the materials that will be used in the FEA
@@ -88,7 +90,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                 'stiffness matrix' :   {'evaluation':'numerical integration',
                                                         'domain':'triangle',
                                                         'rule':'Gauss Legendre',
-                                                        'points':3}}, 
+                                                        'points':3}},
                          }
 
 # Solver
