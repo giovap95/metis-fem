@@ -58,7 +58,6 @@ def stiff_matrix_info(mesh,material_lib,i):
 
     element = material_lib[key]['element']
     evaluation = material_lib[key]['stiffness matrix']['evaluation']
-    print('evaluation: ',evaluation)
 
     if evaluation == 'numerical integration':
         domain = material_lib[key]['stiffness matrix']['domain']

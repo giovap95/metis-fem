@@ -56,6 +56,6 @@ def linear(mesh,bcs,material_lib,parameters):
     U = inv(K)@F
 
     print('###########################################################')
-    print('U: ',U)
-    
+    print('first ten U entries: ',U[0:10])
+
     return U,K
