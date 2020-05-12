@@ -1,6 +1,5 @@
 # Byte-compiled / optimized / DLL files
 fempagno/modules/__pycache__
-fempagno/modules/boundary_conditions.py
 *.py[cod]
 *$py.class
 *.pyc
