@@ -127,16 +127,16 @@ def shape_funct(mesh, i, el_type, roots, dim):
         r = roots[1]
         N = np.array([1-r-s , s , r])
         
-        dN = np.array([[-1,1,0],
-                       [-1,0,1]])
+        dN = np.flipud(np.array([[-1,1,0],
+                       [-1,0,1]]))
         
     elif el_type == 'quad':
         csi = roots[0]
         eta = roots[1]
         N = np.array([.25*(1-csi)*(1-eta) , .25*(1+csi)*(1-eta) , .25*(1+csi)*(1+eta) , .25*(1-csi)*(1+eta)])
 
-        dN   =  np.array([[-.25*(1-eta) ,  .25*(1-eta)  , .25*(1+eta) , -.25*(1+eta)],
-                          [-.25*(1-csi) , -.25*(1+csi) ,  .25*(1+csi) ,  .25*(1-csi)]])
+        dN   =  np.flipud(np.array([[-.25*(1-eta) ,  .25*(1-eta)  , .25*(1+eta) , -.25*(1+eta)],
+                          [-.25*(1-csi) , -.25*(1+csi) ,  .25*(1+csi) ,  .25*(1-csi)]]))
     else:
         print('WARNING: No procedure coded for this element')
         sys.exit()   

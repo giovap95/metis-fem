@@ -26,7 +26,7 @@ class Mesh:
         
     def coordinates(self,i):
         rows = self.conn_table[i]
-        cds = np.flipud(self.cds_table[rows])
+        cds = self.cds_table[rows]
                   
         return cds    
     
