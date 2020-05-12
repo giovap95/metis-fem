@@ -45,7 +45,7 @@ class BoundaryConditions:
             load_nat = load_nat.reshape((1,2))
 
             N = np.array([-.5 , .5]).reshape((1,2))
-            f_nat = length/2 * 2 * (N @ load_nat) # det(j) * w_i * f(N @ q)
+            f_nat = length/2 * 2 * (N.T @ load_nat) # det(j) * w_i * f(N @ q)
 
             f = f_nat @ R.T
             f = np.concatenate(f.T)
