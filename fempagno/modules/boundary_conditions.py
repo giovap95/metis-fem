@@ -11,8 +11,11 @@ class BoundaryConditions:
     def __init__(self):
         self.load = None
         self.disp = None
+        self.neumann_elements = None
+        self.dirichlet_elements = None
         self.dirichlet_nodes = None
         self.neumann_nodes = None
+        self.load = None #array of distributed loads
 
     def find_dofs(self,mesh,nodes):
         dn = mesh.dofspernode
@@ -21,19 +24,33 @@ class BoundaryConditions:
         dofs = np.concatenate(dofs.T)
         return dofs
 
-    def find_boundary_nodes(self, gmsh, tag):
+    def find_boundary_obj(self, gmsh, tag):
         boundary_elements = gmsh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
         boundary_nodes = gmsh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
         boundary_nodes = np.unique(boundary_nodes) # only consider nodes once
-        return boundary_nodes
+        return boundary_elements , boundary_nodes
 
-    def apply_bcs(self,F,K,mesh):
+    def apply_bcs(self, F, K, mesh):
 
-        # Find dofs where Neumann conditions are enforced
-        neumann_dofs = self.find_dofs(mesh,self.neumann_nodes)
-        # Apply forces on neumann dofs
-        F[neumann_dofs] += self.load # prescribed nodal external forces
+        # Method for distributed load on the bondary of a 2D element (only constant loads on the xy plane for now)
+        for i in self.neumann_elements:
+            nodes = self.neumann_nodes[i]
+            dofs = self.find_dofs(mesh , nodes)
+            coord = mesh.cds_table[nodes]
+            length = np.sqrt((cds[1][0]-cds[0][0])**2+(cds[1][1]-cds[0][1])**2)
+            c = (cds[1,0]-cds[0,0])/length
+            s = (cds[1,1]-cds[0,1])/length
+            R = np.array([[c , s],
+                          [-s , c]])
+            load_nat = R @ load
+            load_nat = load_nat.reshape((1,2))
 
+            N = np.array([-.5 , .5]).reshape((1,2))
+            f_nat = length/2 * 2 * (N @ load_nat) # det(j) * w_i * f(N @ q)
+
+            f = f_nat @ R.T
+            f = np.concatenate(f.T)
+            F[dofs] += f
 
         # Find dofs where Dirichlet conditions are enforced
         dirichlet_dofs = self.find_dofs(mesh,self.dirichlet_nodes)
