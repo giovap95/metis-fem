@@ -18,10 +18,10 @@ from boundary_conditions import BoundaryConditions
 import solver
 
 # Read mesh file from gmsh
-gmsh = meshio.read("D:\\Documents\\GitHub\\metis-fem\\fempagno\\PRE\\composite.msh")
+gmsh = meshio.read("D:\\Documents\\GitHub\\metis-fem\\fempagno\\PRE\\prova.msh")
 # Instancing classes to objects
 mesh = Mesh()
-element = 'triangle'
+element = 'quad'
 
 mesh.material = gmsh.get_cell_data('gmsh:physical',element)
 mesh.el_def = np.ones((len(mesh.material),1)) # could be deprecated?
@@ -39,7 +39,7 @@ mesh.totdofs=mesh.nodes*mesh.dofspernode
 bcs = BoundaryConditions()
 bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(gmsh,'Dirichlet')
 bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(gmsh,'Neumann')
-bcs.load = np.array([100,0]) 
+bcs.load = np.array([0,100]).reshape((1,2)) # N/m
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -73,7 +73,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                 'geometric properties': {'area': 1},
                                 'stiffness matrix' :    {'evaluation':'closed form'}},
 
-                         81  :  {'element' : 'quad',
+                         8  :  {'element' : 'quad',
                                 'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},
@@ -81,7 +81,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                                         'domain':'quad',
                                                         'rule':'Gauss Legendre',
                                                         'points':4}},
-                         8  :  {'element'  :  'triangle',
+                         18  :  {'element'  :  'triangle',
                                 'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},

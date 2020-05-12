@@ -31,24 +31,28 @@ class BoundaryConditions:
 
     def apply_bcs(self, F, K, mesh):
 
-        # Method for distributed load on the bondary of a 2D element (only constant loads on the xy plane for now)
+        # Method for distributed load on the boundary of a 2D element (only constant loads on the xy plane for now)
         for i in self.neumann_elements:
+
             nodes = self.neumann_nodes[i]
             dofs = self.find_dofs(mesh , nodes)
+
             cds = mesh.cds_table[nodes]
             length = np.sqrt((cds[1][0]-cds[0][0])**2+(cds[1][1]-cds[0][1])**2)
+
             c = (cds[1,0]-cds[0,0])/length
             s = (cds[1,1]-cds[0,1])/length
+
             R = np.array([[c , s],
                           [-s , c]])
-            load_nat = R @ self.load
+            
+            load_nat = R @ self.load.T
             load_nat = load_nat.reshape((1,2))
 
-            N = np.array([-.5 , .5]).reshape((1,2))
+            N = np.array([.5 , .5]).reshape((1,2))
             f_nat = length/2 * 2 * (N.T @ load_nat) # det(j) * w_i * f(N @ q)
-
-            f = f_nat @ R.T
-            f = np.concatenate(f.T)
+            f = f_nat @ R
+            f = np.concatenate(f)
             F[dofs] += f
 
         # Find dofs where Dirichlet conditions are enforced
