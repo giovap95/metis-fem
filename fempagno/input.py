@@ -39,7 +39,7 @@ mesh.totdofs=mesh.nodes*mesh.dofspernode
 bcs = BoundaryConditions()
 bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(gmsh,'Dirichlet')
 bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(gmsh,'Neumann')
-bcs.load = np.array([0,100]).reshape((1,2)) # N/m
+bcs.load = np.array([1000,0]).reshape((1,2)) # N/m
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -81,7 +81,7 @@ material_lib =           {1  :  {'element' :  'spring',
                                                         'domain':'quad',
                                                         'rule':'Gauss Legendre',
                                                         'points':4}},
-                         18  :  {'element'  :  'triangle',
+                         81  :  {'element'  :  'triangle',
                                 'elastic properties' : {"Young's modulus":70000,
                                                         'Poisson ratio':0.3},
                                 'geometric properties':{'thickness' : 5},

@@ -141,7 +141,7 @@ def shape_funct(mesh, i, el_type, roots, dim):
         print('WARNING: No procedure coded for this element')
         sys.exit()   
         
-        
+   
     jac = dN @ el_coord
     dNxy = np.linalg.inv(jac) @ dN
     detj = np.linalg.det(jac)

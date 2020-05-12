@@ -27,12 +27,12 @@ def linear(mesh,bcs,material_lib,parameters):
 
     print('------ Stiffness matrix assembly -------')
 
-    for i in tqdm(np.arange(mesh.elements)):
-
+    for i in np.arange(mesh.elements):
+        
         mesh.el_type(i)
 
         k = motoreFEM.stiffness_matrix(mesh,material_lib,parameters,T,i)
-
+        
         dof = motoreFEM.locglobmap(mesh,i)
 
         K = motoreFEM.assembly(k,dof,K)
