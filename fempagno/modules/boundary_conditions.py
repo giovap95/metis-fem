@@ -23,9 +23,9 @@ class BoundaryConditions:
         dofs = np.concatenate(dofs.T)
         return dofs
 
-    def find_boundary_obj(self, gmsh, tag):
-        boundary_elements = gmsh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
-        boundary_nodes = gmsh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
+    def find_boundary_obj(self, mesh, tag):
+        boundary_elements = mesh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
+        boundary_nodes = mesh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
         # boundary_nodes = np.unique(boundary_nodes) # only consider nodes once
         return boundary_elements , boundary_nodes
 
@@ -37,7 +37,7 @@ class BoundaryConditions:
             nodes = self.neumann_nodes[i]
             dofs = self.find_dofs(mesh , nodes)
 
-            cds = mesh.cds_table[nodes]
+            cds = mesh.points[nodes]
             length = np.sqrt((cds[1][0]-cds[0][0])**2+(cds[1][1]-cds[0][1])**2)
 
             c = (cds[1,0]-cds[0,0])/length

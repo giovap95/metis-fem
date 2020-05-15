@@ -25,4 +25,4 @@ Physical Curve("Dirichlet", 221) = {4};
 //+
 Plane Surface(1) = {1};
 //+
-Physical Surface("material", 8) = {1};
+Physical Surface("ALU 6061", 8) = {1};

@@ -29,7 +29,7 @@ def linear(mesh,bcs,material_lib,parameters):
 
     for i in np.arange(mesh.elements):
         
-        mesh.el_type(i)
+        #mesh.el_type(i)
 
         k = motoreFEM.stiffness_matrix(mesh,material_lib,parameters,T,i)
         

@@ -6,65 +6,42 @@ Created on Fri Mar 27 18:59:46 2020
 """
 import sys
 
-def elastic_properties(elMat,material_lib,i):
-
-    key = elMat
-
-    if material_lib[key]['element'] == 'spring':
-        springStiffness =material_lib[key]['elastic properties']['stiffness']
-        return springStiffness
-
-    elif material_lib[key]['element'] == 'bar':
-        E = material_lib[key]['elastic properties']["Young's modulus"]
-        return E
-
-    elif material_lib[key]['element'] == 'triangle':
-        E = material_lib[key]['elastic properties']["Young's modulus"]
+def elastic_properties(mesh,material_lib,i):
+    
+    try: 
+        key = mesh.material[i]
+        Young = material_lib[key]['elastic properties']["Young's modulus"]
         ni = material_lib[key]['elastic properties']['Poisson ratio']
-        return E,ni
-
-    elif material_lib[key]['element'] == 'quad':
-        E = material_lib[key]['elastic properties']["Young's modulus"]
-        ni = material_lib[key]['elastic properties']['Poisson ratio']
-        return E,ni
-    else:
+    except KeyError:
         print('Material not defined')
         sys.exit()
+        
+    return Young,ni
+
+def geometric_properties(mesh, material_lib,i):
+
+    try: 
+        key = mesh.material[i]
+        volumeFactor = material_lib[key]['geometric properties']['volumeFactor']
+    except KeyError:
+        print('Material not defined')
+            
+    return volumeFactor
 
 
-def geometric_properties(elMat,material_lib,i):
+def stiff_matrix_info(mesh,i):
 
-    key = elMat
-
-    if material_lib[key]['element'] == 'bar':
-        A = material_lib[key]['geometric properties']['area']
-        return A
-
-    elif material_lib[key]['element'] == 'triangle':
-        t = material_lib[key]['geometric properties']['thickness']
-        return t
-
-    elif material_lib[key]['element'] == 'quad':
-        t = material_lib[key]['geometric properties']['thickness']
-        return t
-    else:
-        print('geometry of element',i,'not recognised')
+    try: 
+        key = mesh.elementType[i]
+        
+        evaluation = mesh.element_lib[key]['stiffness matrix']['evaluation']
+        domain = mesh.element_lib[key]['stiffness matrix']['domain']
+        rule = mesh.element_lib[key]['stiffness matrix']['rule']
+        points = mesh.element_lib[key]['stiffness matrix']['points']
+        
+    except KeyError:
+        print('Element not defined')
         sys.exit()
+    
+    return evaluation, domain, rule, points
 
-
-def stiff_matrix_info(mesh,material_lib,i):
-
-    key = mesh.material[i]
-
-    element = material_lib[key]['element']
-    evaluation = material_lib[key]['stiffness matrix']['evaluation']
-
-    if evaluation == 'numerical integration':
-        domain = material_lib[key]['stiffness matrix']['domain']
-
-        rule = material_lib[key]['stiffness matrix']['rule']
-
-        points = material_lib[key]['stiffness matrix']['points']
-        return element, evaluation, domain, rule, points
-    elif evaluation == 'closed form':
-        return element, evaluation, None, None, None
