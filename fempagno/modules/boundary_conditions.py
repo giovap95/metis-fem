@@ -32,7 +32,7 @@ class BoundaryConditions:
     def apply_bcs(self, F, K, mesh):
 
         # Method for distributed load on the boundary of a 2D element (only constant loads on the xy plane for now)
-        for i in self.neumann_elements:
+        for i in range(self.neumann_elements.size):
 
             nodes = self.neumann_nodes[i]
             dofs = self.find_dofs(mesh , nodes)
