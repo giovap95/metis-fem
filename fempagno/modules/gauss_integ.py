@@ -5,6 +5,7 @@ Created on Sat Apr 25 12:44:55 2020
 @author: giova
 """
 
+import motoremesh
 import numpy as np
 import sys
 
@@ -113,16 +114,16 @@ def quad(mesh,E,ni,t,weights,roots,cdsreal,parameters):
     return k
 
 
-def shape_funct(mesh, i, el_type, roots, dim):
-    nodesinelement = len(mesh.NodesInElement(i))
+def shape_funct(mesh, i, elementType, roots, dim):
+    nodesinelement = len(motoremesh.NodesInElement(mesh,i))
     N = np.zeros((1,nodesinelement))
     dN = np.zeros((dim,nodesinelement))
     jac = np.zeros((dim,dim))
-    el_coord = mesh.coordinates(i)   # form: [x1,y1],
+    el_coord = motoremesh.coordinates(mesh,i)   # form: [x1,y1],
                                      #       [x2,y2],... CRUCIAL
 
     #choose the correct parametric shape function
-    if el_type == 'triangle':
+    if elementType == 'triangle':
         s = roots[0]
         r = roots[1]
         N = np.array([1-r-s , s , r])
@@ -130,7 +131,7 @@ def shape_funct(mesh, i, el_type, roots, dim):
         dN = np.array([[-1,1,0],
                        [-1,0,1]])
 
-    elif el_type == 'quad':
+    elif elementType == 'quad':
         csi = roots[0]
         eta = roots[1]
         N = np.array([.25*(1-csi)*(1-eta) , .25*(1+csi)*(1-eta) , .25*(1+csi)*(1+eta) , .25*(1-csi)*(1+eta)])
@@ -143,7 +144,6 @@ def shape_funct(mesh, i, el_type, roots, dim):
 
 
     jac = dN @ el_coord
-    print(el_coord)
     dNxy = np.linalg.inv(jac) @ dN
     detj = np.linalg.det(jac)
     if detj<0:

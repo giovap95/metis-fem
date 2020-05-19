@@ -9,36 +9,23 @@ import sys
 # specify where to look for modules
 sys.path.append("modules")
 sys.path.append("PRE")
-
+import time
+start = time.process_time()
 
 # import modules and specific functions
 import numpy as np
-from motoremesh import Mesh
+import motoremesh
 from boundary_conditions import BoundaryConditions
 import solver
 
 # Read mesh file from gmsh
-gmsh = meshio.read("D:\\Documents\\GitHub\\metis-fem\\fempagno\\PRE\\prova.msh")
-# Instancing classes to objects
-mesh = Mesh()
-element = 'quad'
+mesh = motoremesh.GMSH('pull_out')
 
-mesh.material = gmsh.get_cell_data('gmsh:physical',element)
-mesh.el_def = np.ones((len(mesh.material),1)) # could be deprecated?
-mesh.cds_table = gmsh.points[:,0:2] # coordinates of each node anti-clockwise
-
-mesh.conn_table = gmsh.cells_dict[element] # nodes in each element (1 row: 1 element) anti-clockwise
-
-mesh.elements = len(gmsh.cells_dict[element])
-mesh.nodes = len(gmsh.points)
-mesh.nodesperelem = 500 # deprecable
-mesh.dofspernode = 2
-mesh.totdofs=mesh.nodes*mesh.dofspernode
 
 
 bcs = BoundaryConditions()
-bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(gmsh,'Dirichlet')
-bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(gmsh,'Neumann')
+bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'Dirichlet')
+bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
 bcs.load = np.array([1000,0]).reshape((1,2)) # N/m
 
 # Define parameters and the materials that will be used in the FEA
@@ -56,43 +43,48 @@ parameters = {"strain components": 3, #TODO: to be related to the spatial dimens
 # A = mm^2
 # t = mm
 
-material_lib =           {1  :  {'element' :  'spring',
-                                'elastic properties' : {'stiffness':2.10256},
-                                'stiffness matrix':{'evaluation':'closed form'}},
 
-                         2  :  {'element' :  'bar',
-                                'elastic properties' :   {"Young's modulus":2},
-                                'geometric properties' : {'area': 2},
-                                'stiffness matrix' :     {'evaluation':'numerical integration',
-                                                          'domain':'line',
-                                                          'rule':'Gauss Legendre',
-                                                          'points':2}},
 
-                         3  :  {'element' :  'bar',
-                                'elastic properties' :  {"Young's modulus":100},
-                                'geometric properties': {'area': 1},
-                                'stiffness matrix' :    {'evaluation':'closed form'}},
+material_lib =           {'spring'    :             {'elastic properties' : {"Young's modulus":2.10256,
+                                                                            'Poisson ratio':None},
+                                                     'geometric properties': {'volumeFactor': None}},
 
-                         8  :  {'element' : 'quad',
-                                'elastic properties' : {"Young's modulus":70000,
-                                                        'Poisson ratio':0.3},
-                                'geometric properties':{'thickness' : 5},
-                                'stiffness matrix' :   {'evaluation':'numerical integration',
-                                                        'domain':'quad',
-                                                        'rule':'Gauss Legendre',
-                                                        'points':4}},
-                         81  :  {'element'  :  'triangle',
-                                'elastic properties' : {"Young's modulus":70000,
-                                                        'Poisson ratio':0.3},
-                                'geometric properties':{'thickness' : 5},
-                                'stiffness matrix' :   {'evaluation':'numerical integration',
-                                                        'domain':'triangle',
-                                                        'rule':'Gauss Legendre',
-                                                        'points':3}},
+                          'open_bar'  :             {'elastic properties' :   {"Young's modulus":2,
+                                                                              'Poisson ratio':None},
+                                                    'geometric properties' : {'volumeFactor': 2}},
+
+                          'mat1'       :            {'elastic properties' :  {"Young's modulus":100,
+                                                                               'Poisson ratio' : 0.3},
+                                                    'geometric properties': {'volumeFactor': 1}},
+
+                          'matrix'  :             {'elastic properties' : {"Young's modulus":700,
+                                                                            'Poisson ratio':0.3},
+                                                    'geometric properties':{'volumeFactor' : 5}},
+
+
+                          'fiber'  :             {'elastic properties' : {"Young's modulus":70000,
+                                                                            'Poisson ratio':0.3},
+                                                    'geometric properties':{'volumeFactor' : 5}},
                          }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Solver
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
-gmsh.point_data = {'Displacement':U.reshape((int(len(U)/2),2))}
-meshio.write('prova2.vtk',gmsh,file_format='vtk')
+mesh.point_data = {'Displacement':U.reshape((int(len(U)/mesh.d),mesh.d))}
+meshio.write('prova2.vtk',mesh,file_format='vtk')
+end = time.process_time()
+print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")

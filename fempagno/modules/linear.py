@@ -11,11 +11,17 @@ import matplotlib.pyplot as plt
 import sys
 import time
 from tqdm import tqdm
+import scipy.sparse as sps
+from scipy.sparse.linalg import spsolve
 
 
 def linear(mesh,bcs,material_lib,parameters):
     #%% Allocating memory
-    K = np.zeros(shape=(mesh.totdofs,mesh.totdofs))
+    # K = np.zeros(shape=(mesh.totdofs,mesh.totdofs))
+    
+    r = []
+    c = []
+    data = [] # storing variables for assembly
 
     F = np.zeros(shape=(mesh.totdofs))
 
@@ -29,13 +35,20 @@ def linear(mesh,bcs,material_lib,parameters):
 
     for i in np.arange(mesh.elements):
         
-        mesh.el_type(i)
+        #mesh.el_type(i)
 
         k = motoreFEM.stiffness_matrix(mesh,material_lib,parameters,T,i)
         
         dof = motoreFEM.locglobmap(mesh,i)
 
-        K = motoreFEM.assembly(k,dof,K)
+        r_new, c_new, data_new = motoreFEM.assembly(k,dof)
+        
+        r.extend(r_new)
+        c.extend(c_new)
+        data.extend(data_new)
+        
+    K = sps.coo_matrix((data,(r,c)),shape=(mesh.totdofs,mesh.totdofs))
+    K = K.tocsr()
 
     print('------ Applying boundary conditions ------')
     #%% Applying boundary conditions
@@ -44,16 +57,17 @@ def linear(mesh,bcs,material_lib,parameters):
     #%% Solving
     #U = np.matmul(inv(K), F)
 
-    if np.linalg.det(K)==0:
-        print('\n','\n')
-        print('K is singular! the geometry is not constrained. Aborting...')
-        print('\n','\n')
-        sys.exit()
+    #if np.linalg.det(K)==0:
+    #    print('\n','\n')
+    #    print('K is singular! the geometry is not constrained. Aborting...')
+     #   print('\n','\n')
+     #   sys.exit()
 
 
     print('------ Computing displacements ------')
 
-    U = inv(K)@F
+    #U = inv(K)@F
+    U = spsolve(K, F)
 
     print('###########################################################')
     print('first ten U entries: ',U[0:10])
