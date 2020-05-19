@@ -12,6 +12,7 @@ from integration_scheme import integration_scheme as i_s
 import gauss_integ
 import materiale
 import motoremesh
+import scipy.sparse as sps
 ## Global stiffness matrix
 #%% generate k_i
 def stiffness_matrix(mesh,material_lib,parameters,T,i):
@@ -91,9 +92,13 @@ def locglobmap(mesh,i): # extract dof of current element
     return dof
 
 #%% assembly of global stiffness matrix
-def assembly(k_mat,cur_dof,K):
+def assembly(k_mat,cur_dof):
+   
+   prod = [(x,y) for x in cur_dof for y in cur_dof]
+   r = [x for (x,y) in prod]
+   c = [y for (x,y) in prod]
+   data = np.concatenate(k_mat)
+   #K[np.ix_(cur_dof,cur_dof)] += k_mat
 
-   K[np.ix_(cur_dof,cur_dof)] += k_mat
 
-
-   return K
+   return r, c, data

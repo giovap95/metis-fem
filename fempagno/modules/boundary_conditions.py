@@ -5,6 +5,7 @@ Created on Tue Apr 28 11:33:51 2020
 @author: giova
 """
 import numpy as np
+import scipy.sparse as sps
 
 class BoundaryConditions:
 
@@ -58,7 +59,8 @@ class BoundaryConditions:
         # Find dofs where Dirichlet conditions are enforced
         dirichlet_dofs = self.find_dofs(mesh,np.unique(self.dirichlet_nodes))
         F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement
+        
         # zeroing out zero displacement columns and rows
-        K[:,dirichlet_dofs] = 0
-        K[dirichlet_dofs,:] = 0
+        K[:,dirichlet_dofs] = 0 # row slicing
+        K[dirichlet_dofs,:] = 0 # column slicing
         K[dirichlet_dofs,dirichlet_dofs] = 1

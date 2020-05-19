@@ -84,4 +84,4 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
 mesh.point_data = {'Displacement':U.reshape((int(len(U)/mesh.d),mesh.d))}
-meshio.write('prova2.vtk',mesh,file_format='vtk')
+#meshio.write('prova2.vtk',mesh,file_format='vtk')
