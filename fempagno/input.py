@@ -9,7 +9,8 @@ import sys
 # specify where to look for modules
 sys.path.append("modules")
 sys.path.append("PRE")
-
+import time
+start = time.process_time()
 
 # import modules and specific functions
 import numpy as np
@@ -43,13 +44,13 @@ parameters = {"strain components": 3, #TODO: to be related to the spatial dimens
 # t = mm
 
 
-               
+
 material_lib =           {'spring'    :             {'elastic properties' : {"Young's modulus":2.10256,
                                                                             'Poisson ratio':None},
-                                                     'geometric properties': {'volumeFactor': None}},   
-                  
+                                                     'geometric properties': {'volumeFactor': None}},
+
                           'open_bar'  :             {'elastic properties' :   {"Young's modulus":2,
-                                                                              'Poisson ratio':None},   
+                                                                              'Poisson ratio':None},
                                                     'geometric properties' : {'volumeFactor': 2}},
 
                           'mat1'       :            {'elastic properties' :  {"Young's modulus":100,
@@ -59,8 +60,8 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
                           'matrix'  :             {'elastic properties' : {"Young's modulus":700,
                                                                             'Poisson ratio':0.3},
                                                     'geometric properties':{'volumeFactor' : 5}},
-                
-                
+
+
                           'fiber'  :             {'elastic properties' : {"Young's modulus":70000,
                                                                             'Poisson ratio':0.3},
                                                     'geometric properties':{'volumeFactor' : 5}},
@@ -84,4 +85,6 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
 mesh.point_data = {'Displacement':U.reshape((int(len(U)/mesh.d),mesh.d))}
-#meshio.write('prova2.vtk',mesh,file_format='vtk')
+meshio.write('prova2.vtk',mesh,file_format='vtk')
+end = time.process_time()
+print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
