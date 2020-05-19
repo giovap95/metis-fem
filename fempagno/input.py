@@ -9,7 +9,8 @@ import sys
 # specify where to look for modules
 sys.path.append("modules")
 sys.path.append("PRE")
-
+import time
+start = time.process_time()
 
 # import modules and specific functions
 import numpy as np
@@ -85,3 +86,5 @@ U,K = solver.run(mesh,bcs,material_lib,parameters)
 
 mesh.point_data = {'Displacement':U.reshape((int(len(U)/mesh.d),mesh.d))}
 meshio.write('prova2.vtk',mesh,file_format='vtk')
+end = time.process_time()
+print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
