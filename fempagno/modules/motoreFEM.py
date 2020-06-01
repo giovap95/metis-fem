@@ -33,7 +33,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
 
 
         elif elType == 'bar': #check if element is a bar
-            young = materiale.elastic_properties(mesh,material_lib,i)
+            young, ni = materiale.elastic_properties(mesh,material_lib,i)
             area = materiale.geometric_properties(mesh,material_lib,i)
             cds = motoremesh.coordinates(mesh,i)
             length = np.sqrt((cds[1][0]-cds[0][0])**2+(cds[1][1]-cds[0][1])**2) # finds the length through pythagora's theorem
@@ -60,10 +60,10 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
     if evaluation == 'numerical integration':
         
         k = 0
-        E,ni = materiale.elastic_properties(mesh,material_lib,i)
-        t = materiale.geometric_properties(mesh,material_lib,i)
+        E,ni =   materiale.elastic_properties(mesh,material_lib,i)
+        t    =   materiale.geometric_properties(mesh,material_lib,i)
         weights,roots = i_s(evaluation,domain,rule,points)
-        D = E/(1-ni**2)*np.array([[1,       ni,             0],
+        D    =   E/(1-ni**2)*np.array([[1,       ni,             0],
                                   [ni,       1,             0],
                                   [0,        0,     .5*(1-ni)]]) # plane stress
 

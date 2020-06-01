@@ -10,7 +10,7 @@ import motoreFEM
 import matplotlib.pyplot as plt
 import sys
 import time
-from tqdm import tqdm
+from tqdm import trange
 import scipy.sparse as sps
 from scipy.sparse.linalg import spsolve
 
@@ -33,7 +33,7 @@ def linear(mesh,bcs,material_lib,parameters):
 
     print('------ Stiffness matrix assembly -------')
 
-    for i in np.arange(mesh.elements):
+    for i in trange(mesh.elements):
         
         #mesh.el_type(i)
 

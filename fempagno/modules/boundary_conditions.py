@@ -25,10 +25,13 @@ class BoundaryConditions:
         return dofs
 
     def find_boundary_obj(self, mesh, tag):
-        boundary_elements = mesh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
-        boundary_nodes = mesh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
-        # boundary_nodes = np.unique(boundary_nodes) # only consider nodes once
-        return boundary_elements , boundary_nodes
+        try:
+            boundary_elements = mesh.cell_sets_dict[tag]['vertex'] # Array of element numbers with tag "tag"
+            boundary_nodes = mesh.cells_dict['vertex'][boundary_elements] # table of nodes of elements with tag "tag"
+            # boundary_nodes = np.unique(boundary_nodes) # only consider nodes once
+            return boundary_elements , boundary_nodes
+        except KeyError:
+            pass
 
     def apply_bcs(self, F, K, mesh):
 

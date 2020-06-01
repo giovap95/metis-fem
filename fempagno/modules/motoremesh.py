@@ -131,6 +131,14 @@ def GMSH(mesh_file):
     except KeyError:
         # print("No triangular elements in mesh")
         pass
+    
+    line = False
+    try: 
+        dummy = mesh.cell_data_dict['gmsh:physical']['line']
+        line = True
+    except KeyError:
+        # print('no line elements in mesh')
+        pass
 
     if quad:
         meshing = True
@@ -165,7 +173,19 @@ def GMSH(mesh_file):
             key = get_key(mesh.field_data, materialTag)
             mesh.material.append(key)            
             mesh.elementType.append('triangle')
-    
+            
+    if line:
+        meshing = True
+        lines = len(mesh.cell_data_dict['gmsh:physical']['line'])
+        mesh.elements += lines
+        for t in range(lines):
+            mesh.conn_table.append(mesh.cells_dict['line'][t])
+            materialTag=mesh.cell_data_dict["gmsh:physical"]["line"][t]
+            key = get_key(mesh.field_data, materialTag)
+            mesh.material.append(key)
+            mesh.elementType.append('bar')
+            
+            
     if not meshing:
         print("something went wrong: could not extract mesh data")
         sys.exit()
@@ -180,7 +200,7 @@ def GMSH(mesh_file):
                                                                     'rule'       : None,
                                                                     'points'     : None}},
                                                              
-                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'numerical integration',
+                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'closed form',
                                                                     'domain'     : 'line',
                                                                     'rule'       : 'Gauss Legendre',
                                                                     'points'     :  2}},

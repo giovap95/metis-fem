@@ -123,7 +123,14 @@ def shape_funct(mesh, i, elementType, roots, dim):
                                      #       [x2,y2],... CRUCIAL
 
     #choose the correct parametric shape function
-    if elementType == 'triangle':
+    if elementType == 'bar':
+        csi = roots
+        N = np.array([.5*(1-csi) , .5*(1+csi)])
+        
+        dN = np.array([-.5 , .5])
+        
+        
+    elif elementType == 'triangle':
         s = roots[0]
         r = roots[1]
         N = np.array([1-r-s , s , r])

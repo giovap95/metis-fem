@@ -19,22 +19,25 @@ from boundary_conditions import BoundaryConditions
 import solver
 
 # Read mesh file from gmsh
-mesh = motoremesh.GMSH('pull_out')
+mesh = motoremesh.GMSH('line')
 
 
 
 bcs = BoundaryConditions()
 bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'Dirichlet')
-bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
-bcs.load = np.array([1000,0]).reshape((1,2)) # N/m
+try:
+    bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
+    bcs.load = np.array([1000,0]).reshape((1,2)) # N/m
+except TypeError:
+    print('No Neumann conditions established')
 
 # Define parameters and the materials that will be used in the FEA
 
 parameters = {"strain components": 3, #TODO: to be related to the spatial dimension
                                                     #strain component -> stress/strain state: 1D,
                                                     #2D plane stress, 2D plane strain, 3D
-              "solver"           : {"type": "linear"},
-              "spatial dimensions": 2} # try with nonlinear}
+              "solver"           : {"type": "nonlinear"},
+              "spatial dimensions": 1} # try with nonlinear}
 
 
 # Unit of measure:
@@ -49,7 +52,7 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
                                                                             'Poisson ratio':None},
                                                      'geometric properties': {'volumeFactor': None}},
 
-                          'open_bar'  :             {'elastic properties' :   {"Young's modulus":2,
+                          'rock'  :             {'elastic properties' :   {"Young's modulus":2,
                                                                               'Poisson ratio':None},
                                                     'geometric properties' : {'volumeFactor': 2}},
 
@@ -84,6 +87,8 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
 # Solver
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
+
+# Appending data for post processing visualisation
 mesh.point_data = {'Displacement':U.reshape((int(len(U)/mesh.d),mesh.d))}
 meshio.write('prova2.vtk',mesh,file_format='vtk')
 end = time.process_time()
