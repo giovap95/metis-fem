@@ -1,5 +1,7 @@
 # Byte-compiled / optimized / DLL files
 fempagno/modules/__pycache__
+*.vtk
+*.msh
 *.py[cod]
 *$py.class
 *.pyc
