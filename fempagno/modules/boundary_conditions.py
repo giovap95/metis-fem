@@ -12,9 +12,9 @@ class BoundaryConditions:
     def __init__(self):
         self.disp = None
         self.neumann_elements = None
-        self.dirichlet_elements = None
-        self.dirichlet_nodes = None
         self.neumann_nodes = None
+        self.dirichlet_elements = None
+         self.dirichlet_nodes = None
         self.load = None #array of distributed loads
 
     def find_dofs(self,mesh,nodes):
@@ -25,8 +25,15 @@ class BoundaryConditions:
         return dofs
 
     def find_boundary_obj(self, mesh, tag):
-        boundary_elements = mesh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
-        boundary_nodes = mesh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
+        if mesh.d == 1:
+            boundary_elements = mesh.cell_sets_dict[tag]['vertex'] # Array of element numbers with tag "tag"
+            boundary_nodes = mesh.cells_dict['vertex'][boundary_elements] # table of nodes of elements with tag "tag"
+        elif mesh.d == 2:
+            boundary_elements = mesh.cell_sets_dict[tag]['line'] # Array of element numbers with tag "tag"
+            boundary_nodes = mesh.cells_dict['line'][boundary_elements] # table of nodes of elements with tag "tag"
+        elif mesh.d == 3:
+            boundary_elements = np.hstack((mesh.cell_sets_dict[tag]['triangle'], mesh.cell_sets_dict[tag]['quad'])) # Array of element numbers with tag "tag"
+            boundary_nodes = np.hstack((mesh.cells_dict['triangle'][boundary_elements], mesh.cells_dict['quad'][boundary_elements])) # table of nodes of elements with tag "tag"
         # boundary_nodes = np.unique(boundary_nodes) # only consider nodes once
         return boundary_elements , boundary_nodes
 
@@ -46,7 +53,7 @@ class BoundaryConditions:
 
             R = np.array([[c , s],
                           [-s , c]])
-            
+
             load_nat = R @ self.load.T
             load_nat = load_nat.reshape((1,2))
 
@@ -59,7 +66,7 @@ class BoundaryConditions:
         # Find dofs where Dirichlet conditions are enforced
         dirichlet_dofs = self.find_dofs(mesh,np.unique(self.dirichlet_nodes))
         F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement
-        
+
         # zeroing out zero displacement columns and rows
         K[:,dirichlet_dofs] = 0 # row slicing
         K[dirichlet_dofs,:] = 0 # column slicing
