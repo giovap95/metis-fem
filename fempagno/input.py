@@ -19,7 +19,7 @@ from boundary_conditions import BoundaryConditions
 import solver
 
 # Read mesh file from gmsh
-mesh = motoremesh.GMSH('pull_out')
+mesh = motoremesh.GMSH('prova')
 
 
 
@@ -62,7 +62,7 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
                                                     'geometric properties':{'volumeFactor' : 5}},
 
 
-                          'fiber'  :             {'elastic properties' : {"Young's modulus":70000,
+                          'ALU 6061'  :             {'elastic properties' : {"Young's modulus":70000,
                                                                             'Poisson ratio':0.3},
                                                     'geometric properties':{'volumeFactor' : 5}},
                          }

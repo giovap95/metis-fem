@@ -11,10 +11,11 @@ class BoundaryConditions:
 
     def __init__(self):
         self.disp = None
-        self.neumann_elements = None
+        self.neumann_elements = None       
+        self.neumann_nodes = None
         self.dirichlet_elements = None
         self.dirichlet_nodes = None
-        self.neumann_nodes = None
+ 
         self.load = None #array of distributed loads
 
     def find_dofs(self,mesh,nodes):
