@@ -14,7 +14,7 @@ class BoundaryConditions:
         self.neumann_elements = None
         self.neumann_nodes = None
         self.dirichlet_elements = None
-         self.dirichlet_nodes = None
+        self.dirichlet_nodes = None
         self.load = None #array of distributed loads
 
     def find_dofs(self,mesh,nodes):
@@ -38,7 +38,10 @@ class BoundaryConditions:
         return boundary_elements , boundary_nodes
 
     def apply_bcs(self, F, K, mesh):
-
+        
+        
+        #line_element = mesh.cell_sets_dict['Neumann']['line']
+        
         # Method for distributed load on the boundary of a 2D element (only constant loads on the xy plane for now)
         for i in range(self.neumann_elements.size):
 

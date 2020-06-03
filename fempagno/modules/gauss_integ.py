@@ -123,6 +123,15 @@ def shape_funct(mesh, i, elementType, roots, dim):
                                      #       [x2,y2],... CRUCIAL
 
     #choose the correct parametric shape function
+    if elementType == 'line':
+        length = np.sqrt((el_coord[0,0]-el_coord[1,0])**2+(el_coord[0,1]+el_coord[1,1])**2)
+        csi = roots
+        N = np.array([.5*(1-csi)],
+                     [.5*(1+csi)])
+        dN = np.array([-.5, .5])
+        dNxy = None #don't care for now
+        detj = length/2
+        
     if elementType == 'triangle':
         s = roots[0]
         r = roots[1]
@@ -142,11 +151,11 @@ def shape_funct(mesh, i, elementType, roots, dim):
         print('WARNING: No procedure coded for this element')
         sys.exit()
 
-
-    jac = dN @ el_coord
-    dNxy = np.linalg.inv(jac) @ dN
-    detj = np.linalg.det(jac)
-    if detj<0:
-        print('jacobian determinant is < 0. Check dN or element coordinates')
-        sys.exit()
-    return dNxy, detj
+    if elementType != 'line': # line element is hard-coded
+        jac = dN @ el_coord
+        dNxy = np.linalg.inv(jac) @ dN
+        detj = np.linalg.det(jac)
+        if detj<0:
+            print('jacobian determinant is < 0. Check dN or element coordinates')
+            sys.exit()
+    return dNxy, detj, N

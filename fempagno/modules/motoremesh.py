@@ -131,6 +131,13 @@ def GMSH(mesh_file):
     except KeyError:
         # print("No triangular elements in mesh")
         pass
+    
+    line = False
+    try:
+        dummy = mesh.cell_data_dict['gmsh:physical']['line']
+        line = True
+    except KeyError:
+        pass
 
     if quad:
         meshing = True
@@ -138,13 +145,7 @@ def GMSH(mesh_file):
         mesh.elements += quads
         for t in range(quads):
             mesh.conn_table.append(mesh.cells_dict["quad"][t])
-            materialTag=mesh.cell_data_dict["gmsh:physical"]["quad"][t]
-            # we assume that a physical surface in 2D is only used to identify 
-            # elements with the same material property.
-            # GMSH identifies a physical group by a tag and a name. 
-            # Tags are stores in cell_data_dict for each element.
-            # Tags and names are linked in field_data              
-            # The function get_key returns the name (=key) for a given tag            
+            materialTag=mesh.cell_data_dict["gmsh:physical"]["quad"][t]          
             key = get_key(mesh.field_data, materialTag)
             mesh.material.append(key)            
             mesh.elementType.append('quad')
@@ -155,17 +156,20 @@ def GMSH(mesh_file):
         mesh.elements += triangles
         for t in range(triangles):
             mesh.conn_table.append(mesh.cells_dict["triangle"][t])
-            materialTag=mesh.cell_data_dict["gmsh:physical"]["triangle"][t]
-            # we assume that a physical surface in 2D is only used to identify 
-            # elements with the same material property.
-            # GMSH identifies a physical group by a tag and a name. 
-            # Tags are stores in cell_data_dict for each element.
-            # Tags and names are linked in field_data              
-            # The function get_key returns the name (=key) for a given tag            
+            materialTag=mesh.cell_data_dict["gmsh:physical"]["triangle"][t]          
             key = get_key(mesh.field_data, materialTag)
             mesh.material.append(key)            
             mesh.elementType.append('triangle')
-    
+    if line:
+        meshing = True
+        lines = len(mesh.cell_data_dict["gmsh:physical"]['line'])
+        mesh.elements += lines
+        for t in range(lines):
+            mesh.conn_table.append(mesh.cells_dict["line"][t])
+            materialTag=mesh.cell_data_dict["gmsh:physical"]["line"][t]          
+            key = get_key(mesh.field_data, materialTag)
+            mesh.material.append(key)            
+            mesh.elementType.append('line')
     if not meshing:
         print("something went wrong: could not extract mesh data")
         sys.exit()
@@ -180,10 +184,10 @@ def GMSH(mesh_file):
                                                                     'rule'       : None,
                                                                     'points'     : None}},
                                                              
-                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'numerical integration',
-                                                                    'domain'     : 'line',
-                                                                    'rule'       : 'Gauss Legendre',
-                                                                    'points'     :  2}},
+                          'line'      :    {'stiffness matrix'  :   {'evaluation' : 'closed form',
+                                                                    'domain'     :  None,
+                                                                    'rule'       :  None,
+                                                                    'points'     :  None}},
                           
                           'triangle'  :    {'stiffness matrix'  :  {'evaluation' : 'numerical integration',
                                                                     'domain'     : 'triangle',

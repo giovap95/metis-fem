@@ -32,7 +32,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
                                              [-1, 1]])
 
 
-        elif elType == 'bar': #check if element is a bar
+        elif elType == 'line': #check if element is a bar
             young = materiale.elastic_properties(mesh,material_lib,i)
             area = materiale.geometric_properties(mesh,material_lib,i)
             cds = motoremesh.coordinates(mesh,i)
@@ -69,7 +69,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
 
         for h in range(len(weights)):
             current_roots = roots[h]
-            dNxy , detj = gauss_integ.shape_funct(mesh, i, elType, current_roots, dim)
+            dNxy , detj, N = gauss_integ.shape_funct(mesh, i, elType, current_roots, dim)
             B = np.zeros((d,len(motoremesh.NodesInElement(mesh,i))*2))
 
             for j in range(len(dNxy[0,:])): # assemble B matrix independent of its size, automatically
