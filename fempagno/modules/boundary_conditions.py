@@ -70,7 +70,6 @@ class BoundaryConditions:
                 nodes = mesh.cells_dict['line'][element_number]
                 cds = mesh.points[nodes]
                 dofs = self.find_dofs(mesh.dofspernode, nodes)
-                print(b_type)
                 
                 if b_type == 'line':
                     length = np.linalg.norm(cds)

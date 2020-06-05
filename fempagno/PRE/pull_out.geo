@@ -47,6 +47,3 @@ Physical Line("Neumann", 10) = {6};
 Physical Line("Dirichlet", 20) = {4};
 Physical Line("Dirichlet", 20) += {8};
 Physical Line("Dirichlet", 20) += {12};
-
-//+
-Physical Surface("material") = {3, 2, 1};
