@@ -6,6 +6,8 @@ Created on Tue Apr 28 11:33:51 2020
 """
 import numpy as np
 import scipy.sparse as sps
+from integration_scheme import integration_scheme as i_s
+from gauss_integ import shape_funct
 
 class BoundaryConditions:
 
@@ -17,8 +19,8 @@ class BoundaryConditions:
         self.dirichlet_nodes = None
         self.load = None #array of distributed loads
 
-    def find_dofs(self,mesh,nodes):
-        dn = mesh.dofspernode
+    def find_dofs(self, dofspernode, nodes):
+        dn = dofspernode
         dofs = np.array([nodes * dn,
                           nodes * dn + 1])
         dofs = np.concatenate(dofs.T)
@@ -40,36 +42,77 @@ class BoundaryConditions:
     def apply_bcs(self, F, K, mesh):
         
         
-        #line_element = mesh.cell_sets_dict['Neumann']['line']
+        ### NEUMANN BOUNDARY CONDITIONS ###
+        element_dict = []
+        try:
+            dummy = mesh.cell_sets_dict['Neumann']['line']
+            element_dict.append('line')
+        except KeyError:
+            pass
         
-        # Method for distributed load on the boundary of a 2D element (only constant loads on the xy plane for now)
-        for i in range(self.neumann_elements.size):
-
-            nodes = self.neumann_nodes[i]
-            dofs = self.find_dofs(mesh , nodes)
-
-            cds = mesh.points[nodes]
-            length = np.sqrt((cds[1][0]-cds[0][0])**2+(cds[1][1]-cds[0][1])**2)
-
-            c = (cds[1,0]-cds[0,0])/length
-            s = (cds[1,1]-cds[0,1])/length
-
-            R = np.array([[c , s],
-                          [-s , c]])
-
-            load_nat = R @ self.load.T
-            load_nat = load_nat.reshape((1,2))
-
-            N = np.array([.5 , .5]).reshape((1,2))
-            f_nat = length/2 * 2 * (N.T @ load_nat) # det(j) * w_i * f(N @ q)
-            f = f_nat @ R
-            f = np.concatenate(f)
-            F[dofs] += f
-
+        try:
+            dummy = mesh.cell_sets_dict['Neumann']['triangle']
+            element_dict.append('line')
+        except KeyError:
+            pass
+        
+        try:
+            dummy = mesh.cell_sets_dict['Neumann']['quad']
+            element_dict.append('line')
+        except KeyError:
+            pass
+        
+        for b_type in element_dict:
+            
+            b_elements = mesh.cell_sets_dict['Neumann'][b_type]
+            for i in range(b_elements.size):
+                element_number = b_elements[i]
+                nodes = mesh.cells_dict['line'][element_number]
+                cds = mesh.points[nodes]
+                dofs = self.find_dofs(mesh.dofspernode, nodes)
+                print(b_type)
+                
+                if b_type == 'line':
+                    length = np.linalg.norm(cds)
+                    c = (cds[1,0]-cds[0,0])/length
+                    s = (cds[1,1]-cds[0,1])/length
+                    R = np.array([[c, s],
+                                  [-s, c]])
+                    load_nat = R @ self.load.T
+                    load_nat = load_nat.reshape((1,2))  
+                    N = np.array([.5 , .5]).reshape((1,2))
+                    f_nat = length/2 * 2 * (N.T @ load_nat) # det(j) * w_i * f(N @ q)
+                    f = f_nat @ R
+                    f = np.concatenate(f)
+                    F[dofs] += f 
+                    
+                if b_type == 'triangle':
+                    weights, roots = i_s('numerical integration', 'triangle', 'Gauss Legendre', 3)
+                    q = self.load.T
+                    for h in (roots.size):
+                        cur_roots = roots[h]
+                        cur_weight = weights[h]
+                        dNxy, detj, N = shape_funct(mesh, element_number, 'triangle', cur_roots, mesh.d)
+                        f += np.sum(detj*cur_weight*(N @ q))
+                    f = np.concatenate(f)
+                    F[dofs] += f
+                    
+                if b_type == 'quad':
+                    weights, roots = i_s('numerical integration', 'quad', 'Gauss Legendre', 4)
+                    q = self.load.T
+                    for h in (roots.size):
+                        cur_roots = roots[h]
+                        cur_weight = weights[h]
+                        dNxy, detj, N = shape_funct(mesh, element_number, 'quad', cur_roots, mesh.d)
+                        f += np.sum(detj*cur_weight*(N @ q))
+                    f = np.concatenate(f)
+                    F[dofs] += f
+        
+        ### DIRICHLET BOUNDARY CONDITIONS ###
         # Find dofs where Dirichlet conditions are enforced
-        dirichlet_dofs = self.find_dofs(mesh,np.unique(self.dirichlet_nodes))
+        dirichlet_dofs = self.find_dofs(mesh.dofspernode,np.unique(self.dirichlet_nodes))
         F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement
-
+    
         # zeroing out zero displacement columns and rows
         K[:,dirichlet_dofs] = 0 # row slicing
         K[dirichlet_dofs,:] = 0 # column slicing

@@ -10,7 +10,6 @@ def elastic_properties(mesh,material_lib,i):
     
     try: 
         key = mesh.material[i]
-        print(key)
         Young = material_lib[key]['elastic properties']["Young's modulus"]
         ni = material_lib[key]['elastic properties']['Poisson ratio']
     except KeyError:
