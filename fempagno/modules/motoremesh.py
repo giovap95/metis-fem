@@ -188,7 +188,7 @@ def GMSH(mesh_file):
                           'triangle'  :    {'stiffness matrix'  :  {'evaluation' : 'numerical integration',
                                                                     'domain'     : 'triangle',
                                                                     'rule'       : 'Gauss Legendre',
-                                                                    'points'     : 3}},
+                                                                    'points'     : 1}},
                                                 
                           'quad'      :    {'stiffness matrix'  : {'evaluation'  : 'numerical integration',
                                                                    'domain'      : 'quad',

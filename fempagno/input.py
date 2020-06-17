@@ -17,16 +17,17 @@ import numpy as np
 import motoremesh
 from boundary_conditions import BoundaryConditions
 import solver
+from stress_recovery import *
 
 # Read mesh file from gmsh
-mesh = motoremesh.GMSH('prova')
+mesh = motoremesh.GMSH('beam')
 
 
 
 bcs = BoundaryConditions()
 bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'Dirichlet')
 bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
-bcs.load = np.array([1000,0]).reshape((1,2)) # N/m
+bcs.load = np.array([0,20]).reshape((1,2)) # N/mm
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -84,7 +85,30 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
 # Solver
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
-mesh.point_data = {'Displacement':U.reshape((int(len(U)/mesh.d),mesh.d))}
-meshio.write('prova2.vtk',mesh,file_format='vtk')
+# Postprocessing
+U = U.reshape((int(len(U)/mesh.d),mesh.d)) # reshaping U vector to match spatial dimensions (u_x, u_y, u_z)
+sigma = stress_recovery(mesh,U,bcs,material_lib)
+sigma_vm = von_mises(sigma)
+
+
+
+# Writing data
+cells = {}
+try:
+    cells['triangle'] = mesh.cells_dict['triangle']
+except KeyError:
+    pass
+
+try:
+    cells['quad'] = mesh.cells_dict['quad']
+except KeyError:
+    pass
+
+point_data = {'Displacement':U}
+cell_data = {'Stress':sigma,
+             'Von-Mises':sigma_vm}
+meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data = point_data, cell_data = cell_data)    
+
+
 end = time.process_time()
 print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
