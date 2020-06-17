@@ -34,8 +34,8 @@ def integration_scheme(evaluation,domain,rule,points):
             elif domain == 'triangle':
                 
                 if points == 1:
-                    weights = np.array([1.0])
-                    roots = np.array([[0.3333333333333333]])
+                    weights = np.array([0.5])
+                    roots = np.array([[0.3333333333333333,0.3333333333333333]])
                 elif points == 3:
                     weights = np.array([0.16666666666666666,
                                         0.16666666666666666,
@@ -48,7 +48,7 @@ def integration_scheme(evaluation,domain,rule,points):
                 
                 if points == 1:
                     weights = np.array([4.0])
-                    roots = np.array([0.0,0.0])
+                    roots = np.array([[0.0,0.0]])
                 elif points == 4:
                     weights = np.array([1.0,1.0,1.0,1.0])
                     roots = np.array([[-0.5773502691896257,+0.5773502691896257],
