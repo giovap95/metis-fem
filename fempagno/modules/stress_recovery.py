@@ -42,7 +42,7 @@ def stress_recovery(mesh,U,bcs,material_lib):
             sigma = D @ epsilon 
             #sigma = sigma*detj*current_weights
         sigma_vec[i] = sigma
-        print('Attento che lo stress recovery funziona solo se sei in 2D con elementi lineari!!')
+    print('Attento che lo stress recovery funziona solo se sei in 2D con elementi lineari!!')
             
     return sigma_vec
 
