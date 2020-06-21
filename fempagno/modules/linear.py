@@ -32,7 +32,6 @@ def linear(mesh,bcs,material_lib,parameters):
     #%% Magic happens
 
     print('------ Stiffness matrix assembly -------')
-
     for i in np.arange(mesh.elements):
         
         #mesh.el_type(i)
@@ -51,25 +50,9 @@ def linear(mesh,bcs,material_lib,parameters):
     K = K.tocsr()
 
     print('------ Applying boundary conditions ------')
-    #%% Applying boundary conditions
     bcs.apply_bcs(F,K,mesh)
 
-    #%% Solving
-    #U = np.matmul(inv(K), F)
-
-    #if np.linalg.det(K)==0:
-    #    print('\n','\n')
-    #    print('K is singular! the geometry is not constrained. Aborting...')
-     #   print('\n','\n')
-     #   sys.exit()
-
-
     print('------ Computing displacements ------')
-
-    #U = inv(K)@F
     U = spsolve(K, F)
-
-    print('###########################################################')
-    print('first ten U entries: ',U[0:10])
 
     return U,K
