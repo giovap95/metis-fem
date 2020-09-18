@@ -63,7 +63,7 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
                                                     'geometric properties':{'volumeFactor' : 5}},
 
 
-                          'ALU 6061'  :             {'elastic properties' : {"Young's modulus":70000,
+                          'AISI 316'  :             {'elastic properties' : {"Young's modulus":70000,
                                                                             'Poisson ratio':0.3},
                                                     'geometric properties':{'volumeFactor' : 5}},
                          }
@@ -104,11 +104,13 @@ try:
 except KeyError:
     pass
 
+
 point_data = {'Displacement':U}
 cell_data = {'Stress':sigma,
              'Von-Mises':sigma_vm}
-meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data = point_data, cell_data = cell_data)    
-
+mesh.cell_data = cell_data
+meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data=point_data, cell_data=cell_data)
+#meshio.write('prova2.vtk', mesh, file_format='vtk', cell_data=cell_data)
 
 end = time.process_time()
 print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
