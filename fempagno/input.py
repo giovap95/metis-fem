@@ -93,6 +93,7 @@ U = np.stack((U,zeros,zeros)).T
 # plot
 x = U[:,0]
 y = range(len(x))
+x.sort()
 plt.plot(y,x, '.-')
 
 # Writing data

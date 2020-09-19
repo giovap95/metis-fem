@@ -147,11 +147,8 @@ def shape_funct(mesh, i, elementType, roots, dim):
         print('WARNING: No procedure coded for this element')
         sys.exit()
 
-    print('coordinates',el_coord)
     jac = dN @ el_coord
-    print('jac',jac)
     dNxy = 1/(jac) * dN
-    print('dNxy',dNxy)
     x1 = el_coord[0]
     x2 = el_coord[1]
     x = (x2+x1)/2
