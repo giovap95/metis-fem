@@ -207,10 +207,10 @@ def GMSH(mesh_file):
                                                                     'rule'       : None,
                                                                     'points'     : None}},
 
-                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'closed form',
-                                                                    'domain'     : None,
-                                                                    'rule'       : None,
-                                                                    'points'     : None}},
+                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'numerical integration',
+                                                                    'domain'     : 'line',
+                                                                    'rule'       : 'Gauss Legendre',
+                                                                    'points'     : 1}},
 
                           'triangle'  :    {'stiffness matrix'  :  {'evaluation' : 'numerical integration',
                                                                     'domain'     : 'triangle',

@@ -11,6 +11,7 @@ sys.path.append("modules")
 sys.path.append("PRE")
 import time
 start = time.process_time()
+import matplotlib.pyplot as plt
 
 # import modules and specific functions
 import numpy as np
@@ -89,6 +90,10 @@ U,K = solver.run(mesh,bcs,material_lib,parameters)
 zeros = np.zeros(len(U))
 U = np.stack((U,zeros,zeros)).T
 
+# plot
+x = U[:,0]
+y = range(len(x))
+plt.plot(y,x, '.-')
 
 # Writing data
 

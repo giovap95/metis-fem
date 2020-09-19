@@ -123,7 +123,12 @@ def shape_funct(mesh, i, elementType, roots, dim):
                                      #       [x2,y2],... CRUCIAL
 
     #choose the correct parametric shape function
-    if elementType == 'triangle':
+    if elementType == 'bar':
+        s = roots
+        N = np.array([.5 * (1 - s) , .5 * (s - 1)])
+        dN = np.array([-.5 , .5])
+        
+    elif elementType == 'triangle':
         s = roots[0]
         r = roots[1]
         N = np.array([1-r-s , s , r])
@@ -144,9 +149,9 @@ def shape_funct(mesh, i, elementType, roots, dim):
 
 
     jac = dN @ el_coord
-    dNxy = np.linalg.inv(jac) @ dN
-    detj = np.linalg.det(jac)
+    dNxy = 1/(jac) * dN
+    detj = jac
     if detj<0:
         print('jacobian determinant is < 0. Check dN or element coordinates')
         sys.exit()
-    return dNxy, detj
+    return dNxy, detj, N 

@@ -23,6 +23,8 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
 
     d = parameters["strain components"] #TODO: move out of the iterating stiffness_matrix function
     dim = parameters["spatial dimensions"]
+    
+    matrix_stiffness = 1
 #%%
     if evaluation == 'closed form':
 
@@ -50,24 +52,17 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
     if evaluation == 'numerical integration':
         
         k = 0
-        E,ni = materiale.elastic_properties(mesh,material_lib,i)
-        t = materiale.geometric_properties(mesh,material_lib,i)
+        E = materiale.elastic_properties(mesh,material_lib,i)
+        A = materiale.geometric_properties(mesh,material_lib,i)
         weights,roots = i_s(evaluation,domain,rule,points)
-        D = E/(1-ni**2)*np.array([[1,       ni,             0],
-                                  [ni,       1,             0],
-                                  [0,        0,     .5*(1-ni)]]) # plane stress
 
         for h in range(len(weights)):
             current_roots = roots[h]
-            dNxy , detj = gauss_integ.shape_funct(mesh, i, elType, current_roots, dim)
-            B = np.zeros((d,len(motoremesh.NodesInElement(mesh,i))*2))
-
-            for j in range(len(dNxy[0,:])): # assemble B matrix independent of its size, automatically
-                B[0,2*j] = dNxy[0,j]
-                B[1,2*j+1] = dNxy[1,j]
-                B[2,2*j+1] = dNxy[0,j]
-                B[2,2*j] = dNxy[1,j]
-            k += B.T@D@B*t*detj*weights[h]
+            dNxy , detj, N = gauss_integ.shape_funct(mesh, i, elType, current_roots, dim)
+            B = dNxy
+            B.shape = (2,1)
+            N.shape = (2,1)
+            k += B*E@B.T*A*detj*weights[h] + N * matrix_stiffness @ N.T
 
     return k
 
