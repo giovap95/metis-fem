@@ -11,12 +11,11 @@ def elastic_properties(mesh,material_lib,i):
     try: 
         key = mesh.material[i]
         Young = material_lib[key]['elastic properties']["Young's modulus"]
-        ni = material_lib[key]['elastic properties']['Poisson ratio']
     except KeyError:
         print('Material not defined')
         sys.exit()
         
-    return Young,ni
+    return Young
 
 def geometric_properties(mesh, material_lib,i):
 

@@ -50,6 +50,7 @@ def el_type(mesh, i):
 def coordinates(mesh,i):
     rows = mesh.conn_table[i]
     cds = mesh.points[rows]
+    cds = cds[:,0]
 
     return cds
 
@@ -104,10 +105,10 @@ def GMSH(mesh_file):
 
     mesh.elements = 0
     mesh.nodes = len(mesh.points)
-    mesh.dofspernode = 2
+    mesh.dofspernode = 1
     mesh.totdofs=mesh.nodes*mesh.dofspernode
     mesh.d = 2
-    mesh.dofsNode = 2
+    mesh.dofsNode = 1
     mesh.conn_table = []
     mesh.material = []
     mesh.el_def = []
@@ -116,6 +117,14 @@ def GMSH(mesh_file):
     meshing = False
 
 
+    line = False
+    try:
+        dummy = mesh.cell_data_dict['gmsh:physical']['line']
+        line = True
+    except KeyError:
+        pass 
+    
+    
     quad = False
     try:
         dummy = mesh.cell_data_dict['gmsh:physical']['quad']
@@ -132,6 +141,24 @@ def GMSH(mesh_file):
         # print("No triangular elements in mesh")
         pass
 
+    if line:
+        meshing = True
+        lines = len(mesh.cell_data_dict["gmsh:physical"]["line"])
+        mesh.elements += lines
+        for t in range(lines):
+            mesh.conn_table.append(mesh.cells_dict["line"][t])
+            materialTag=mesh.cell_data_dict["gmsh:physical"]["line"][t]
+            # we assume that a physical surface in 2D is only used to identify
+            # elements with the same material property.
+            # GMSH identifies a physical group by a tag and a name.
+            # Tags are stores in cell_data_dict for each element.
+            # Tags and names are linked in field_data
+            # The function get_key returns the name (=key) for a given tag
+            key = get_key(mesh.field_data, materialTag)
+            mesh.material.append(key)
+            mesh.elementType.append('bar')
+            
+            
     if quad:
         meshing = True
         quads = len(mesh.cell_data_dict["gmsh:physical"]["quad"])
@@ -180,10 +207,10 @@ def GMSH(mesh_file):
                                                                     'rule'       : None,
                                                                     'points'     : None}},
 
-                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'numerical integration',
-                                                                    'domain'     : 'line',
-                                                                    'rule'       : 'Gauss Legendre',
-                                                                    'points'     :  2}},
+                          'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'closed form',
+                                                                    'domain'     : None,
+                                                                    'rule'       : None,
+                                                                    'points'     : None}},
 
                           'triangle'  :    {'stiffness matrix'  :  {'evaluation' : 'numerical integration',
                                                                     'domain'     : 'triangle',

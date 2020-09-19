@@ -36,19 +36,9 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
             young = materiale.elastic_properties(mesh,material_lib,i)
             area = materiale.geometric_properties(mesh,material_lib,i)
             cds = motoremesh.coordinates(mesh,i)
-            length = np.sqrt((cds[1][0]-cds[0][0])**2+(cds[1][1]-cds[0][1])**2) # finds the length through pythagora's theorem
-            k = (young * area)/length * np.array([[1,0, -1,0],
-                                                    [0,0,0,0],
-                                                  [-1,0, 1,0],
-                                                  [0,0,0,0]])
-            # Rotation to match the real axes
-            c = (cds[1][0]-cds[0][0])/length
-            s = (cds[1][1]-cds[0][1])/length
-            T = np.array([[c,s,0,0],
-                          [-s,c,0,0],
-                          [0,0,c,s],
-                          [0,0,-s,c]]) # TODO: move this to a rotation function
-            k = T.T@k@T                #TODO: is this correct? Shouldn't it be inv(T)@k#T ??
+            length = np.abs(np.diff(cds)) # finds the length
+            k = (young * area)/length * np.array([[1,-1],
+                                                  [-1, 1]])
 
         else:
             print("don't know what to do")
@@ -87,7 +77,7 @@ def locglobmap(mesh,i): # extract dof of current element
 
     n = np.array(mesh.conn_table[i])
     dn = mesh.dofspernode
-    dof = np.array([n*dn,n*dn+1]) #np.zeros(mesh.nodesperelem, dtype=np.uint8)
+    dof = np.array([n*dn]) #np.zeros(mesh.nodesperelem, dtype=np.uint8)
     dof = np.concatenate(dof.T)
     return dof
 

@@ -20,14 +20,14 @@ import solver
 from stress_recovery import *
 
 # Read mesh file from gmsh
-mesh = motoremesh.GMSH('beam')
+mesh = motoremesh.GMSH('pull-out')
 
 
 
 bcs = BoundaryConditions()
-bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'Dirichlet')
-bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
-bcs.load = np.array([0,20]).reshape((1,2)) # N/mm
+bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'start')
+bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'end')
+bcs.load = 10000 # N/mm
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -46,7 +46,7 @@ parameters = {"strain components": 3, #TODO: to be related to the spatial dimens
 
 
 
-material_lib =           {'spring'    :             {'elastic properties' : {"Young's modulus":2.10256,
+material_lib =           {'spring'    :             {'elastic properties' : {"Young's modulus":2000,
                                                                             'Poisson ratio':None},
                                                      'geometric properties': {'volumeFactor': None}},
 
@@ -86,30 +86,14 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
 U,K = solver.run(mesh,bcs,material_lib,parameters)
 
 # Postprocessing
-U = U.reshape((int(len(U)/mesh.d),mesh.d)) # reshaping U vector to match spatial dimensions (u_x, u_y, u_z)
-sigma = stress_recovery(mesh,U,bcs,material_lib)
-sigma_vm = von_mises(sigma)
-
+zeros = np.zeros(len(U))
+U = np.stack((U,zeros,zeros)).T
 
 
 # Writing data
-cells = {}
-try:
-    cells['triangle'] = mesh.cells_dict['triangle']
-except KeyError:
-    pass
-
-try:
-    cells['quad'] = mesh.cells_dict['quad']
-except KeyError:
-    pass
-
 
 point_data = {'Displacement':U}
-cell_data = {'Stress':sigma,
-             'Von-Mises':sigma_vm}
-mesh.cell_data = cell_data
-meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data=point_data, cell_data=cell_data)
+meshio.write_points_cells('prova2.vtk', mesh.points, mesh.cells, point_data=point_data, cell_data = mesh.cell_data)
 #meshio.write('prova2.vtk', mesh, file_format='vtk', cell_data=cell_data)
 
 end = time.process_time()
