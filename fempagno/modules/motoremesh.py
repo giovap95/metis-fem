@@ -51,6 +51,7 @@ def coordinates(mesh,i):
     rows = mesh.conn_table[i]
     cds = mesh.points[rows]
     cds = cds[:,0]
+    cds.shape = (2,1)
 
     return cds
 

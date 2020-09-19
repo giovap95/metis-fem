@@ -126,7 +126,7 @@ def shape_funct(mesh, i, elementType, roots, dim):
     if elementType == 'bar':
         s = roots
         N = np.array([.5 * (1 - s) , .5 * (s - 1)])
-        dN = np.array([-.5 , .5])
+        dN = np.array([[-.5 , .5]])
         
     elif elementType == 'triangle':
         s = roots[0]
@@ -147,11 +147,18 @@ def shape_funct(mesh, i, elementType, roots, dim):
         print('WARNING: No procedure coded for this element')
         sys.exit()
 
-
+    print('coordinates',el_coord)
     jac = dN @ el_coord
+    print('jac',jac)
     dNxy = 1/(jac) * dN
+    print('dNxy',dNxy)
+    x1 = el_coord[0]
+    x2 = el_coord[1]
+    x = (x2+x1)/2
+    L = x2-x1
+    Nxy = np.array([[(x2 - x)/L],[(x - x1)/L]])
     detj = jac
     if detj<0:
         print('jacobian determinant is < 0. Check dN or element coordinates')
         sys.exit()
-    return dNxy, detj, N 
+    return dNxy, detj, Nxy

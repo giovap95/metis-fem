@@ -64,9 +64,9 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
                                                     'geometric properties':{'volumeFactor' : 5}},
 
 
-                          'AISI 316'  :             {'elastic properties' : {"Young's modulus":70000,
+                          'AISI 316'  :             {'elastic properties' : {"Young's modulus":1,
                                                                             'Poisson ratio':0.3},
-                                                    'geometric properties':{'volumeFactor' : 5}},
+                                                    'geometric properties':{'volumeFactor' : 1}},
                          }
 
 
