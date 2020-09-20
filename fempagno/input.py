@@ -28,7 +28,7 @@ mesh = motoremesh.GMSH('pull-out')
 bcs = BoundaryConditions()
 bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'start')
 bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'end')
-bcs.load = 10000 # N/mm
+bcs.load = 1 # N/mm
 
 # Define parameters and the materials that will be used in the FEA
 

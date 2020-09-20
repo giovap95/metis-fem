@@ -24,7 +24,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
     d = parameters["strain components"] #TODO: move out of the iterating stiffness_matrix function
     dim = parameters["spatial dimensions"]
     
-    matrix_stiffness = .2
+    matrix_stiffness = 1
 #%%
     if evaluation == 'closed form':
 
