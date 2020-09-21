@@ -54,6 +54,8 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
         k = 0
         E = materiale.elastic_properties(mesh,material_lib,i)
         A = materiale.geometric_properties(mesh,material_lib,i)
+        matrix_stiffness = materiale.matrix_properties(mesh,material_lib,i)
+        alpha = np.sqrt(matrix_stiffness/(E*A))
         weights,roots = i_s(evaluation,domain,rule,points)
 
         for h in range(len(weights)):
@@ -62,7 +64,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
             B = dNxy
             B.shape = (2,1)
             Nxy.shape = (2,1)
-            k += B*E@B.T*A*detj*weights[h] + Nxy * matrix_stiffness @ Nxy.T*detj*weights[h]
+            k += B*E@B.T*A*detj*weights[h] + Nxy * alpha @ Nxy.T*detj*weights[h]
 
     return k
 

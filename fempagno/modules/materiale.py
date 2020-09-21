@@ -17,6 +17,17 @@ def elastic_properties(mesh,material_lib,i):
         
     return Young
 
+def matrix_properties(mesh,material_lib,i):
+    
+    try:
+        key = mesh.material[i]
+        matrix_stiffness = material_lib[key]['elastic properties']["matrix stiffness"]
+    except KeyError:
+        print('Material not defined')
+        sys.exit()
+        
+    return matrix_stiffness
+
 def geometric_properties(mesh, material_lib,i):
 
     try: 
