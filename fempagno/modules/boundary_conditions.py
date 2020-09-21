@@ -37,7 +37,7 @@ class BoundaryConditions:
             nodes = self.neumann_nodes[i]
             dofs = self.find_dofs(mesh , nodes)
 
-            F[dofs] = self.load
+            F[dofs] = -self.load
 
         # Find dofs where Dirichlet conditions are enforced
         dirichlet_dofs = self.find_dofs(mesh,np.unique(self.dirichlet_nodes))

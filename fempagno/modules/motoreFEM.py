@@ -62,7 +62,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
             B = dNxy
             B.shape = (2,1)
             Nxy.shape = (2,1)
-            k += B*E@B.T*A*detj*weights[h] + Nxy * matrix_stiffness @ Nxy.T
+            k += B*E@B.T*A*detj*weights[h] + Nxy * matrix_stiffness @ Nxy.T*detj*weights[h]
 
     return k
 
