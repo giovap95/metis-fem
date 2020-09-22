@@ -9,15 +9,15 @@ from input import inputfunction
 from plot_analytical_solutions import plot_analytical_solutions as pas
 import matplotlib.pyplot as plt
 
-x1,y1 = inputfunction('pull-out-4')
+x1,y1,foo = inputfunction('pull-out-4-2deg')
 
-x2,y2 = inputfunction('pull-out-8')
+x2,y2,foo  = inputfunction('pull-out-8-2deg')
 
-x3,y3 =  inputfunction('pull-out-16')
+x3,y3,foo  =  inputfunction('pull-out-16-2deg')
 
-x4,y4 =  inputfunction('pull-out-32')
+x4,y4,foo  =  inputfunction('pull-out-32-2deg')
 
-x5,y5 = inputfunction('pull-out-64')
+x5,y5,foo  = inputfunction('pull-out-64-2deg')
 
 xan, yan = pas()
 
@@ -27,3 +27,4 @@ plt.legend(labels, title='number of elements')
 plt.ylabel('Displacement')
 plt.xlabel('Coordinate')
 plt.title('Effect of number of 1st degree bar elements on the FE solution')
+plt.show()

@@ -62,8 +62,8 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
             current_roots = roots[h]
             dNxy , detj, Nxy = gauss_integ.shape_funct(mesh, i, elType, current_roots, dim)
             B = dNxy
-            B.shape = (2,1)
-            Nxy.shape = (2,1)
+            B.shape = (B.size,1)
+            Nxy.shape = (Nxy.size,1)
             k += B*E@B.T*A*detj*weights[h] + Nxy * alpha**2 @ Nxy.T*detj*weights[h]
 
     return k

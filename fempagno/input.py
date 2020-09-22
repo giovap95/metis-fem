@@ -26,8 +26,8 @@ def inputfunction(filename):
     
     
     bcs = BoundaryConditions()
-    bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'start')
-    bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'end')
+    bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'end')
+    bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'start')
     bcs.load = 1 # N/mm
     
     # Define parameters and the materials that will be used in the FEA
@@ -66,7 +66,7 @@ def inputfunction(filename):
     
                               'AISI 316'  :             {'elastic properties' : {"Young's modulus":1,
                                                                                 'Poisson ratio':0.3,
-                                                                                "matrix stiffness":1},
+                                                                                "matrix stiffness":2},
                                                         'geometric properties':{'volumeFactor' : 1}},
                              }
     
@@ -86,24 +86,22 @@ def inputfunction(filename):
     
     # Solver
     U,K = solver.run(mesh,bcs,material_lib,parameters)
+    energyh = .5 * U.T @ K @ U
+    U = np.concatenate((U[[0]], U[2:], U[[1]]))
     
-    # Postprocessing
-    zeros = np.zeros(len(U))
-    U = np.stack((U,zeros,zeros)).T
     
     # plot
     x = mesh.points[:,0]
     x.sort()
-    y = U[:,0]
-    y.sort()
+    y = U
     #plt.plot(x,y, '.-')
     
     # Writing data
     
-    point_data = {'Displacement':U}
-    meshio.write_points_cells('prova2.vtk', mesh.points, mesh.cells, point_data=point_data, cell_data = mesh.cell_data)
+    #point_data = {'Displacement':U}
+    #meshio.write_points_cells('prova2.vtk', mesh.points, mesh.cells, point_data=point_data, cell_data = mesh.cell_data)
     #meshio.write('prova2.vtk', mesh, file_format='vtk', cell_data=cell_data)
     
     end = time.process_time()
     print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
-    return x,y
+    return x,y,energyh
