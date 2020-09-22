@@ -108,7 +108,7 @@ def GMSH(mesh_file):
     mesh.nodes = len(mesh.points)
     mesh.dofspernode = 1
     mesh.totdofs=mesh.nodes*mesh.dofspernode
-    mesh.d = 2
+    mesh.d = 1
     mesh.dofsNode = 1
     mesh.conn_table = []
     mesh.material = []
@@ -124,6 +124,13 @@ def GMSH(mesh_file):
         line = True
     except KeyError:
         pass 
+    
+    line3 = False
+    try:
+        dummy = mesh.cell_data_dict['gmsh:physical']['line3']
+        line3 = True 
+    except KeyError:
+        pass
     
     
     quad = False
@@ -158,6 +165,23 @@ def GMSH(mesh_file):
             key = get_key(mesh.field_data, materialTag)
             mesh.material.append(key)
             mesh.elementType.append('bar')
+            
+    if line3:
+        meshing = True
+        lines = len(mesh.cell_data_dict["gmsh:physical"]["line3"])
+        mesh.elements += lines
+        for t in range(lines):
+            mesh.conn_table.append(mesh.cells_dict["line3"][t])
+            materialTag=mesh.cell_data_dict["gmsh:physical"]["line3"][t]
+            # we assume that a physical surface in 2D is only used to identify
+            # elements with the same material property.
+            # GMSH identifies a physical group by a tag and a name.
+            # Tags are stores in cell_data_dict for each element.
+            # Tags and names are linked in field_data
+            # The function get_key returns the name (=key) for a given tag
+            key = get_key(mesh.field_data, materialTag)
+            mesh.material.append(key)
+            mesh.elementType.append('bar3')
             
             
     if quad:
@@ -211,8 +235,11 @@ def GMSH(mesh_file):
                           'bar'      :    {'stiffness matrix'  :   {'evaluation' : 'numerical integration',
                                                                     'domain'     : 'line',
                                                                     'rule'       : 'Gauss Legendre',
-                                                                    'points'     : 1}},
-
+                                                                    'points'     :  1}},
+                          'bar3'     :    {'stiffness matrix'  :   {'evaluation' : 'numerical integration',
+                                                                    'domain'     : 'line',
+                                                                    'rule'       : 'Gauss Legendre',
+                                                                    'points'     :  2}},
                           'triangle'  :    {'stiffness matrix'  :  {'evaluation' : 'numerical integration',
                                                                     'domain'     : 'triangle',
                                                                     'rule'       : 'Gauss Legendre',

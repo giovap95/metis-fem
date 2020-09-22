@@ -127,6 +127,36 @@ def shape_funct(mesh, i, elementType, roots, dim):
         s = roots
         N = np.array([.5 * (1 - s) , .5 * (s - 1)])
         dN = np.array([[-.5 , .5]])
+        x1 = el_coord[0]
+        x2 = el_coord[1]
+        x = (x2+x1)/2
+        L = x2-x1
+        Nxy = np.array([[(x2 - x)/L],[(x - x1)/L]])
+        dNxy = np.array([-1/L, 1/L])
+        
+    elif elementType == 'bar3':
+        s = roots 
+        N = np.array([[.5*(s**2-s) ,  .5*(s**2 + s), -s**2 + 1]])
+        dN = np.array([s - .5,  s + .5,  -2 * s])
+        
+        x1 = el_coord[0]
+        x2 = el_coord[1]
+        x3 = el_coord[2]
+        xc = np.array([x1, x2, x3]).reshape((3,1))
+        x = N@xc
+        N1 = ((x2-x)*(x3-x))/((x2-x1)*(x3-x1))
+        N2 = ((x1-x)*(x3-x))/((x1-x2)*(x3-x2))        
+        N3 = ((x1-x)*(x2-x))/((x1-x3)*(x2-x3))
+        
+        Nxy = np.array([N1, N2, N3])
+        
+        dN1 = ((x-x2) + (x-x3))/((x2-x1)*(x3-x1))
+        dN2 = ((x-x1) + (x-x3))/((x1-x2)*(x3-x2))
+        dN3 = ((x-x1) + (x-x2))/((x1-x3)*(x2-x3))
+        
+        dNxy = np.array([dN1, dN2, dN3])
+        
+        
         
     elif elementType == 'triangle':
         s = roots[0]
@@ -148,13 +178,9 @@ def shape_funct(mesh, i, elementType, roots, dim):
         sys.exit()
 
     jac = dN @ el_coord
-    dNxy = 1/(jac) * dN
-    x1 = el_coord[0]
-    x2 = el_coord[1]
-    x = (x2+x1)/2
-    L = x2-x1
-    Nxy = np.array([[(x2 - x)/L],[(x - x1)/L]])
+    #dNxy = 1/(jac) * dN
     detj = jac
+    #Nxy = 1/jac * N
     if detj<0:
         print('jacobian determinant is < 0. Check dN or element coordinates')
         sys.exit()

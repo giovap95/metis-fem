@@ -26,4 +26,4 @@ labels = ['4','8','16','32','64','analytical']
 plt.legend(labels, title='number of elements')
 plt.ylabel('Displacement')
 plt.xlabel('Coordinate')
-plt.title('Effect of number of elements on the FE solution')
+plt.title('Effect of number of 1st degree bar elements on the FE solution')
