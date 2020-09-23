@@ -149,4 +149,4 @@ def shape_funct(mesh, i, elementType, roots, dim):
     if detj<0:
         print('jacobian determinant is < 0. Check dN or element coordinates')
         sys.exit()
-    return dNxy, detj
+    return dNxy, detj, N

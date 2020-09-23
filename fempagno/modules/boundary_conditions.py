@@ -13,15 +13,29 @@ class BoundaryConditions:
         self.disp = None
         self.neumann_elements = None       
         self.neumann_nodes = None
-        self.dirichlet_elements = None
-        self.dirichlet_nodes = None
+        self.dirichlet_elementsLeft = None
+        self.dirichlet_nodesLeft = None
+        self.dirichlet_elementsBottom = None
+        self.dirichlet_nodesBottom = None
  
         self.load = None #array of distributed loads
 
+    def find_dofsBottom(self,mesh,nodes):
+        dn = mesh.dofspernode
+        dofs = np.array([nodes * dn +1])
+        dofs = np.concatenate(dofs.T)
+        return dofs
+    
+    def find_dofsLeft(self,mesh,nodes):
+        dn = mesh.dofspernode
+        dofs = np.array([nodes * dn])
+        dofs = np.concatenate(dofs.T)
+        return dofs
+    
     def find_dofs(self,mesh,nodes):
         dn = mesh.dofspernode
         dofs = np.array([nodes * dn,
-                          nodes * dn + 1])
+                         nodes * dn + 1])
         dofs = np.concatenate(dofs.T)
         return dofs
 
@@ -56,12 +70,20 @@ class BoundaryConditions:
             f = f_nat @ R
             f = np.concatenate(f)
             F[dofs] += f
+            x = 0
 
         # Find dofs where Dirichlet conditions are enforced
-        dirichlet_dofs = self.find_dofs(mesh,np.unique(self.dirichlet_nodes))
-        F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement
+        dirichletLeft_dofs = self.find_dofsLeft(mesh,np.unique(self.dirichlet_nodesLeft))
+        dirichletBottom_dofs = self.find_dofsBottom(mesh,np.unique(self.dirichlet_nodesBottom))
+        F[dirichletLeft_dofs] = 0 # zeroing forces on nodes with zero displacement
+        F[dirichletBottom_dofs] = 0
         
         # zeroing out zero displacement columns and rows
-        K[:,dirichlet_dofs] = 0 # row slicing
-        K[dirichlet_dofs,:] = 0 # column slicing
-        K[dirichlet_dofs,dirichlet_dofs] = 1
+        K[:,dirichletLeft_dofs] = 0 # row slicing
+        K[dirichletLeft_dofs,:] = 0 # column slicing
+        
+        
+        K[:,dirichletBottom_dofs] = 0 # row slicing
+        K[dirichletBottom_dofs,:] = 0 # column slicing
+        K[dirichletBottom_dofs,dirichletBottom_dofs] = 1  
+        K[dirichletLeft_dofs,dirichletLeft_dofs] = 1
