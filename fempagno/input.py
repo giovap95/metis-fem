@@ -20,14 +20,14 @@ import solver
 from stress_recovery import *
 
 # Read mesh file from gmsh
-mesh = motoremesh.GMSH('beam')
+mesh = motoremesh.GMSH('quarter_disk')
 
 
 
 bcs = BoundaryConditions()
 bcs.dirichlet_elements , bcs.dirichlet_nodes = bcs.find_boundary_obj(mesh,'Dirichlet')
 bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
-bcs.load = np.array([0,20]).reshape((1,2)) # N/mm
+bcs.load = np.array([10,0]).reshape((1,2)) # N/mm
 
 # Define parameters and the materials that will be used in the FEA
 
@@ -63,9 +63,9 @@ material_lib =           {'spring'    :             {'elastic properties' : {"Yo
                                                     'geometric properties':{'volumeFactor' : 5}},
 
 
-                          'ALU 6061'  :             {'elastic properties' : {"Young's modulus":70000,
+                          'AISI 316'  :             {'elastic properties' : {"Young's modulus":70000,
                                                                             'Poisson ratio':0.3},
-                                                    'geometric properties':{'volumeFactor' : 5}},
+                                                    'geometric properties':{'volumeFactor' : 1}},
                          }
 
 
