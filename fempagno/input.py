@@ -77,7 +77,7 @@ def inputfunction(filename):
     U = U.reshape((int(len(U)/mesh.d),mesh.d)) # reshaping U vector to match spatial dimensions (u_x, u_y, u_z)
     sigmah, sigma, sigma_error = stress_recovery(mesh,U,bcs,material_lib)
     
-    error_norm = np.linalg.norm(sigma-sigmah)#/np.linalg.norm(sigma)
+    error_norm = np.linalg.norm(sigma-sigmah)/np.linalg.norm(sigma)
     
     
     sigma_vm = von_mises(sigmah)

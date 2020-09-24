@@ -7,7 +7,7 @@ Created on Thu Sep 24 00:56:00 2020
 import matplotlib.pyplot as plt
 from input import inputfunction 
 
-Lnumber = [5, 10, 20, 50]
+Lnumber = [20, 10, 5, 2]
 error_vec = []
 element_vector = []
 
