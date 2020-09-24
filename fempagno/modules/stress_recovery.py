@@ -52,7 +52,7 @@ def stress_recovery(mesh,U,bcs,material_lib):
             x_root = N @ x
             y_root = N @ y 
             a = 25 #mm, radius of the hole
-            P = 1 #N/mm2 load at infinite
+            P = 0.00001 #N/mm2 load at infinite
             r = np.sqrt(x_root**2 + y_root**2) # distance from the centre
             theta = np.arccos(x_root/r) # angle in radians
             

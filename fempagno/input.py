@@ -28,7 +28,7 @@ def inputfunction(filename):
     bcs.dirichlet_elementsLeft , bcs.dirichlet_nodesLeft = bcs.find_boundary_obj(mesh,'DirichletLeft')
     bcs.dirichlet_elementsBottom , bcs.dirichlet_nodesBottom = bcs.find_boundary_obj(mesh,'DirichletBottom')
     bcs.neumann_elements , bcs.neumann_nodes = bcs.find_boundary_obj(mesh,'Neumann')
-    bcs.load = np.array([1,0]).reshape((1,2)) # N/mm
+    bcs.load = np.array([0.00001,0]).reshape((1,2)) # N/mm
     
     # Define parameters and the materials that will be used in the FEA
     
@@ -64,7 +64,7 @@ def inputfunction(filename):
                                                         'geometric properties':{'volumeFactor' : 5}},
     
     
-                              'AISI 316'  :             {'elastic properties' : {"Young's modulus":210000,
+                              'AISI 316'  :             {'elastic properties' : {"Young's modulus":21,
                                                                                 'Poisson ratio':0.29},
                                                         'geometric properties':{'volumeFactor' : 1}},
                              }
