@@ -25,9 +25,9 @@ def stress_recovery(mesh,U,bcs,material_lib):
         elementType = mesh.elementType[i]
         weights, roots = i_s('numerical integration', elementType, 'Gauss Legendre', 1)
         E,ni = materiale.elastic_properties(mesh,material_lib,i)
-        D = E/((1+ni)*(1-2*ni))*np.array([[1-ni,       ni,             0],
-                                          [ni,       1-ni,             0],
-                                          [0,        0,     .5*(1-2*ni)]]) # plane strain
+        D = E/(1-ni**2)*np.array([[1,       ni,             0],
+                                  [ni,       1,             0],
+                                  [0,        0,     .5*(1-ni)]]) # plane stress
         
         for h in range(len(weights)):
             current_roots = roots[h]

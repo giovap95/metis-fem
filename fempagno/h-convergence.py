@@ -16,5 +16,8 @@ for l in Lnumber:
     error_norm, elements = inputfunction(filename)
     error_vec.append(error_norm)
     element_vector.append(elements)
-    
+
 plt.loglog(element_vector, error_vec,'-o')
+plt.xlabel('Number of elements')
+plt.ylabel('Error norm')
+plt.title('h-convergence')

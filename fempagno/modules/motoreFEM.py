@@ -63,9 +63,9 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
         E,ni = materiale.elastic_properties(mesh,material_lib,i)
         t = materiale.geometric_properties(mesh,material_lib,i)
         weights,roots = i_s(evaluation,domain,rule,points)
-        D = E/((1+ni)*(1-2*ni))*np.array([[1-ni,       ni,             0],
-                                          [ni,       1-ni,             0],
-                                          [0,        0,     .5*(1-2*ni)]])
+        D = E/(1-ni**2)*np.array([[1,       ni,             0],
+                                  [ni,       1,             0],
+                                  [0,        0,     .5*(1-ni)]]) # plane stress
 
         for h in range(len(weights)):
             current_roots = roots[h]
