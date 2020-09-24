@@ -41,7 +41,7 @@ class BoundaryConditions:
 
         # Find dofs where Dirichlet conditions are enforced
         dirichlet_dofs = self.find_dofs(mesh,np.unique(self.dirichlet_nodes))
-        F[dirichlet_dofs] = 0 # zeroing forces on nodes with zero displacement
+        F[dirichlet_dofs] = -0.000045399 # zeroing forces on nodes with zero displacement
         
         # zeroing out zero displacement columns and rows
         K[:,dirichlet_dofs] = 0 # row slicing

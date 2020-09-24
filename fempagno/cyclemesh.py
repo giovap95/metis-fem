@@ -9,15 +9,15 @@ from input import inputfunction
 from plot_analytical_solutions import plot_analytical_solutions as pas
 import matplotlib.pyplot as plt
 
-x1,y1,foo = inputfunction('pull-out-4-2deg')
+x1,y1,energyh1 = inputfunction('pull-out-4-2deg-loc-ref')
 
-x2,y2,foo  = inputfunction('pull-out-8-2deg')
+x2,y2,energyh2  = inputfunction('pull-out-8-2deg-loc-ref')
 
-x3,y3,foo  =  inputfunction('pull-out-16-2deg')
+x3,y3,energyh3  =  inputfunction('pull-out-16-2deg-loc-ref')
 
-x4,y4,foo  =  inputfunction('pull-out-32-2deg')
+x4,y4,energyh4=  inputfunction('pull-out-32-2deg-loc-ref')
 
-x5,y5,foo  = inputfunction('pull-out-64-2deg')
+x5,y5,energyh5 = inputfunction('pull-out-64-2deg-loc-ref')
 
 xan, yan = pas()
 

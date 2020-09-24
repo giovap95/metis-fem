@@ -24,7 +24,6 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
     d = parameters["strain components"] #TODO: move out of the iterating stiffness_matrix function
     dim = parameters["spatial dimensions"]
     
-    matrix_stiffness = 1
 #%%
     if evaluation == 'closed form':
 
@@ -64,7 +63,7 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
             B = dNxy
             B.shape = (B.size,1)
             Nxy.shape = (Nxy.size,1)
-            k += B*E@B.T*A*detj*weights[h] + Nxy * alpha**2 @ Nxy.T*detj*weights[h]
+            k += B*E@B.T*A*weights[h]*detj + Nxy * matrix_stiffness @ Nxy.T*weights[h]*detj
 
     return k
 
