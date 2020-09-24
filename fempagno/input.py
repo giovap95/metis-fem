@@ -19,7 +19,7 @@ def inputfunction(filename):
     import motoremesh
     from boundary_conditions import BoundaryConditions
     import solver
-    from stress_recovery import stress_recovery, von_mises
+    from stress_recovery import stress_recovery
     
     # Read mesh file from gmsh
     mesh = motoremesh.GMSH(filename)
@@ -77,8 +77,7 @@ def inputfunction(filename):
     U = U.reshape((int(len(U)/mesh.d),mesh.d)) # reshaping U vector to match spatial dimensions (u_x, u_y, u_z)
     sigma_error = stress_recovery(mesh,U,bcs,material_lib)
     
-    
-    #sigma_vm = von_mises(sigmah)
+
     
     
     
@@ -96,8 +95,6 @@ def inputfunction(filename):
         pass
     
     point_data = {'Displacement':U}
-    #cell_data = {'Stress':sigmah,
-     #            'Von-Mises':sigma_vm}
     meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data = point_data)    
     
     

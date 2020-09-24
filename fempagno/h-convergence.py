@@ -27,7 +27,7 @@ for l in Lnumber:
     
 m = np.log10(triangle_error_vec[2]/triangle_error_vec[1])/np.log10(triangle_element_vector[2]/triangle_element_vector[1])
 plt.loglog(triangle_element_vector, triangle_error_vec,'-o', quad_element_vector, quad_error_vec,'^-')
-#plt.legend('linear triangles, slope: '+str(m))
+plt.legend(['triangles','quads'])
 plt.xlabel('Number of elements')
 plt.ylabel('Error norm')
 plt.title('h-convergence')
