@@ -18,6 +18,7 @@ def stress_recovery(mesh,U,bcs,material_lib):
     sigmah_vec = np.zeros((mesh.elements,stress_components)) # initialize total 
     sigma_an_vec = np.zeros((mesh.elements, stress_components))
     error_sigma = 0
+    error_sigma_element = 0
     
     for i in np.arange(mesh.elements):
         
@@ -27,6 +28,7 @@ def stress_recovery(mesh,U,bcs,material_lib):
         evaluation, domain, rule, points = materiale.stiff_matrix_info(mesh,i)
         weights, roots                   = i_s(evaluation, domain, rule, points)
         E,ni                             = materiale.elastic_properties(mesh,material_lib,i)
+        error_sigma_element = 0
         
         D            = E / (1 - ni**2) * np.array([[1,       ni,             0],
                                                    [ni,       1,             0],
@@ -36,10 +38,9 @@ def stress_recovery(mesh,U,bcs,material_lib):
         
         for h in range(len(weights)):
             current_roots       = roots[h]
-            current_weights     = weights[h]
+            current_weight     = weights[h]
             dNxy, detj, N       = gauss_integ.shape_funct(mesh, i, elementType, current_roots, dimension)
             B                   = np.zeros((stress_components,len(nodes)*2))
-            error_sigma_element = 0
 
             for j in range(len(dNxy[0,:])): # assemble B matrix independent of its size, automatically
                 B[0,2*j] = dNxy[0,j]
@@ -47,7 +48,7 @@ def stress_recovery(mesh,U,bcs,material_lib):
                 B[2,2*j+1] = dNxy[0,j]
                 B[2,2*j] = dNxy[1,j]
                 
-            sigmah = (D @ (B @ u) * detj).reshape((3, 1))
+            sigmah = (D @ (B @ u)).reshape((3, 1))
             sigma_an= str_an(mesh, i, N, detj).reshape((3,1))
             
             ########### Da togliere##################
@@ -55,10 +56,10 @@ def stress_recovery(mesh,U,bcs,material_lib):
             sigma_h_norm = np.linalg.norm(sigmah)
             #########################################
             
-            error_sigma_element += np.linalg.norm(current_weights * (sigma_an - sigmah))
+        error_sigma_element += current_weight * np.linalg.norm((sigma_an - sigmah))
             
         sigmah_vec[i] = sigmah.reshape((1,3))
         sigma_an_vec[i,:] = sigma_an.reshape((1,3))
         
-        error_sigma += error_sigma_element/np.linalg.norm(sigma_an)
+        error_sigma += error_sigma_element
     return  error_sigma  #sigmah_vec, sigma_an_vec,

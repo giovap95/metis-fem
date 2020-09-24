@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from input import inputfunction 
 
-Lnumber = [20, 10, 5]
+Lnumber = [50, 20, 10]
 triangle_error_vec = []
 quad_error_vec = []
 triangle_element_vector = []

@@ -20,9 +20,9 @@ def stress_analytical(mesh,i,N, detj):
     r = np.sqrt(x_root**2 + y_root**2) # distance from the centre
     theta = np.arccos(x_root/r) # angle in radians
     
-    sigma_an_xx = detj * P * (1 - a**2/r**2*(3/2*np.cos(2*theta)+np.cos(4*theta))+(3*a**4)/(2*r**4)*np.cos(4*theta))
-    sigma_an_yy = detj * P * (-a**2/r**2*(1/2*np.cos(2*theta)-np.cos(4*theta))-(3*a**4)/(2*r**4)*np.cos(4*theta))
-    sigma_an_xy = detj * P * (-a**2/r**2*(1/2*np.sin(2*theta)+np.sin(4*theta))+(3*a**4)/(2*r**4)*np.sin(4*theta))
+    sigma_an_xx =  P * (1 - a**2/r**2*(3/2*np.cos(2*theta)+np.cos(4*theta))+(3*a**4)/(2*r**4)*np.cos(4*theta))
+    sigma_an_yy =  P * (-a**2/r**2*(1/2*np.cos(2*theta)-np.cos(4*theta))-(3*a**4)/(2*r**4)*np.cos(4*theta))
+    sigma_an_xy =  P * (-a**2/r**2*(1/2*np.sin(2*theta)+np.sin(4*theta))+(3*a**4)/(2*r**4)*np.sin(4*theta))
     
     sigma_an = np.array([[sigma_an_xx, sigma_an_yy, sigma_an_xy]]).reshape((3, 1))
     
