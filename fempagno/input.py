@@ -75,12 +75,10 @@ def inputfunction(filename):
     
     # Postprocessing
     U = U.reshape((int(len(U)/mesh.d),mesh.d)) # reshaping U vector to match spatial dimensions (u_x, u_y, u_z)
-    sigmah, sigma, sigma_error = stress_recovery(mesh,U,bcs,material_lib)
-    
-    error_norm = np.linalg.norm(sigma-sigmah)
+    sigma_error = stress_recovery(mesh,U,bcs,material_lib)
     
     
-    sigma_vm = von_mises(sigmah)
+    #sigma_vm = von_mises(sigmah)
     
     
     
@@ -98,11 +96,11 @@ def inputfunction(filename):
         pass
     
     point_data = {'Displacement':U}
-    cell_data = {'Stress':sigmah,
-                 'Von-Mises':sigma_vm}
-    meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data = point_data, cell_data = cell_data)    
+    #cell_data = {'Stress':sigmah,
+     #            'Von-Mises':sigma_vm}
+    meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data = point_data)    
     
     
     end = time.process_time()
     print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
-    return error_norm, mesh.elements
+    return sigma_error, mesh.elements

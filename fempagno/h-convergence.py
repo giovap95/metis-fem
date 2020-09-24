@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from input import inputfunction 
 
-Lnumber = [20, 10, 5, 2]
+Lnumber = [20, 10, 5]
 triangle_error_vec = []
 quad_error_vec = []
 triangle_element_vector = []
@@ -19,15 +19,14 @@ for l in Lnumber:
     error_norm, elements = inputfunction(filename)
     triangle_error_vec.append(error_norm)
     triangle_element_vector.append(elements)
-
-    filename = 'quarter_disk-q-' + str(l)
+    
+    filename = 'quarter_disk' + '-q-'+str(l)
     error_norm, elements = inputfunction(filename)
     quad_error_vec.append(error_norm)
     quad_element_vector.append(elements)
     
-    
-m = np.log10(error_vec[3]/error_vec[2])/np.log10(element_vector[3]/element_vector[2])
-plt.loglog(triangle_element_vector, triangle_error_vec,'-o', quad_element_vector, quad_error_vec)
+m = np.log10(triangle_error_vec[2]/triangle_error_vec[1])/np.log10(triangle_element_vector[2]/triangle_element_vector[1])
+plt.loglog(triangle_element_vector, triangle_error_vec,'-o', quad_element_vector, quad_error_vec,'^-')
 #plt.legend('linear triangles, slope: '+str(m))
 plt.xlabel('Number of elements')
 plt.ylabel('Error norm')
