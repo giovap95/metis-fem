@@ -47,13 +47,18 @@ def stress_recovery(mesh,U,bcs,material_lib):
                 B[2,2*j+1] = dNxy[0,j]
                 B[2,2*j] = dNxy[1,j]
                 
-            sigmah = (D @ B @ u * detj).reshape((3, 1))
-            sigma_an= str_an(mesh, i, N).reshape((3,1))
+            sigmah = (D @ (B @ u) * detj).reshape((3, 1))
+            sigma_an= str_an(mesh, i, N, detj).reshape((3,1))
+            
+            ########### Da togliere##################
+            sigma_an_norm = np.linalg.norm(sigma_an)
+            sigma_h_norm = np.linalg.norm(sigmah)
+            #########################################
             
             error_sigma_element += np.linalg.norm(current_weights * (sigma_an - sigmah))
             
         sigmah_vec[i] = sigmah.reshape((1,3))
         sigma_an_vec[i,:] = sigma_an.reshape((1,3))
         
-        error_sigma += error_sigma_element
+        error_sigma += error_sigma_element/np.linalg.norm(sigma_an)
     return  error_sigma  #sigmah_vec, sigma_an_vec,

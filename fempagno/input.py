@@ -95,9 +95,9 @@ def inputfunction(filename):
         pass
     
     point_data = {'Displacement':U}
-    meshio.write_points_cells('prova2.vtk', mesh.points, cells, point_data = point_data)    
+    meshio.write_points_cells('holed-plate.vtk', mesh.points, cells, point_data = point_data)    
     
     
     end = time.process_time()
-    print("\n...you just wasted",round(end-start,6),"seconds of your life\n \n")
+    print("\n",round(end-start,6),"secondi che non torneranno mai\n \n")
     return sigma_error, mesh.elements
