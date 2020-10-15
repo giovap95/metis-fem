@@ -23,38 +23,48 @@ def bar(mesh,young,area,weights,roots,cds,parameters,i):
     return k
 
 
-def triangle(mesh,E,ni,t,weights,roots,cdsreal,parameters):
+def triangle(mesh, i, elType, dim):
     """ Compute the stiffness matrix of a generic 2D triangular element
     in a 2D-ONLY domain using the isoparametric approach"""
 
-    k = np.zeros((6,6))
-
-    D = E/(1-ni**2)*np.array([[1,       ni,             0], # TODO: implement D in the parameters input
-                              [ni,       1,             0],
-                              [0,        0,     .5*(1-ni)]]) # plane stress
-    dN = np.array([[1,0,-1],
-                   [0,1,-1]]).T
-
-    x = cdsreal[:,0]
-    y = cdsreal[:,1]
-    jac = np.zeros((2,2))
-    jac[0,0] = np.sum(dN[:,0]*x)
-    jac[0,1] = np.sum(dN[:,0]*y)
-    jac[1,0] = np.sum(dN[:,1]*x)
-    jac[1,1] = np.sum(dN[:,1]*y) #TODO: validate
-
-    det = np.linalg.det(jac)
-
-    dNxy = np.zeros((3,2))
-    dNxy = dN@np.linalg.inv(jac)
-
-    B = np.zeros((3,6))
-    B = np.array([[dNxy[0,0],0,dNxy[0,1],0,dNxy[0,2],0],
-                  [0,dNxy[1,0],0,dNxy[1,1],0,dNxy[1,2]],
-                  [dNxy[1,0],dNxy[0,0],dNxy[1,1],dNxy[0,1],dNxy[1,2],dNxy[0,2]]])
-
-    k = B.T@D@B*det*t
-    return k
+    coordinates = motoremesh.coordinates(mesh,i)
+    x1 = coordinates[0,0]
+    x2 = coordinates[1,0]
+    x3 = coordinates[2,0]
+    y1 = coordinates[0,1]
+    y2 = coordinates[1,1]
+    y3 = coordinates[2,1]
+    
+    A = .5 * np.linalg.det(np.array([[1, x1, y1],
+                                     [1, x2, y2],
+                                     [1, x3, y3]]))
+    
+    x = (x1 + x2 + x3)/3
+    y = (y1 + y2 + y3)/3
+    
+    N1 = 1/(2*A) * ((x2*y3-x3*y2)+(y2-y3)*x+(x3-x2)*y)
+    N2 = 1/(2*A) * ((x3*y-x1*y3)+(y3-y1)*x+(x1-x3)*y)
+    N3 = 1/(2*A) * ((x1*y2-x2*y1)+(y1-y2)*x+(x2-x1)*y)
+    
+    N = np.array([N1, N2, N3])
+    
+    x12 = x1 - x2
+    x21 = x2 - x1 
+    x13 = x1 - x3 
+    x31 = x3 - x1 
+    x23 = x2 - x3 
+    x32 = x3 - x2 
+    y12 = y1 - y2 
+    y21 = y2 - y1 
+    y13 = y1 - y3 
+    y31 = y3 - y1 
+    y23 = y2 - y3 
+    y32 = y3 - y2 
+    
+    B = np.array([[y23, 0, y31, 0, y12, 0],
+                  [0, x32, 0, x13, 0, x21],
+                  [x32, y23, x13, y31, x21, y12]])    
+    return N, B 
 
 
 def quad(mesh,E,ni,t,weights,roots,cdsreal,parameters):

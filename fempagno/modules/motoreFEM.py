@@ -20,9 +20,12 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
 
     elMat = mesh.material[i]
     elType = mesh.elementType[i]
+    
+    
 
     d = parameters["strain components"] #TODO: move out of the iterating stiffness_matrix function
     dim = parameters["spatial dimensions"]
+
 #%%
     if evaluation == 'closed form':
 
@@ -49,7 +52,20 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
                           [0,0,c,s],
                           [0,0,-s,c]]) # TODO: move this to a rotation function
             k = T.T@k@T                #TODO: is this correct? Shouldn't it be inv(T)@k#T ??
+            
+            
+        elif elType == 'triangle':
+            young, ni = materiale.elastic_properties(mesh, material_lib, i)
+            t = materiale.geometric_properties(mesh, material_lib, i)
+            N, B = gauss_integ.triangle(mesh, i, elType, dim)
+            
+            D = young/(1-ni**2)*np.array([[1,       ni,             0],
+                                      [ni,       1,             0],
+                                      [0,        0,     .5*(1-ni)]]) # plane stress
 
+            
+            k = B.T @ D @ B * t 
+            
         else:
             print("don't know what to do")
             sys.exit()
@@ -63,9 +79,11 @@ def stiffness_matrix(mesh,material_lib,parameters,T,i):
         E,ni = materiale.elastic_properties(mesh,material_lib,i)
         t = materiale.geometric_properties(mesh,material_lib,i)
         weights,roots = i_s(evaluation,domain,rule,points)
+        
         D = E/(1-ni**2)*np.array([[1,       ni,             0],
                                   [ni,       1,             0],
                                   [0,        0,     .5*(1-ni)]]) # plane stress
+
 
         for h in range(len(weights)):
             current_roots = roots[h]

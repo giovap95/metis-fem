@@ -7,7 +7,7 @@ Created on Thu Sep 24 14:39:45 2020
 import motoremesh
 import numpy as np
 
-def stress_analytical(mesh,i,N, detj):
+def stress_analytical(mesh,i,N):
 ### CALCOLO SOLUZIONE ANALITICA ###
 # Ricavo le coordinate dell'elemento corrente
     coordinates = motoremesh.coordinates(mesh,i)

@@ -75,8 +75,9 @@ def inputfunction(filename):
     
     # Postprocessing
     U = U.reshape((int(len(U)/mesh.d),mesh.d)) # reshaping U vector to match spatial dimensions (u_x, u_y, u_z)
-    sigma_error = stress_recovery(mesh,U,bcs,material_lib)
+    sigma_h_vec = stress_recovery(mesh,U,bcs,material_lib)
     
+    sigma_norm = np.linalg.norm(sigma_h_vec[:,0])
 
     
     
@@ -100,4 +101,4 @@ def inputfunction(filename):
     
     end = time.process_time()
     print("\n",round(end-start,6),"secondi che non torneranno mai\n \n")
-    return sigma_error, mesh.elements
+    return sigma_norm, mesh.elements

@@ -63,7 +63,9 @@ def integration_scheme(evaluation,domain,rule,points):
         else:
             print('dont know this rule')
             sys.exit()
-    
+    else: 
+        weights = 1
+        roots = 1
             
     return weights,roots 
 
